@@ -11,7 +11,7 @@
 
 ## 下载与安装
 
-在仓库的 **Releases** 页面下载：
+在 [GitHub Releases](https://github.com/shanhangchi501-jpg/xinyu-shouji/releases) 下载：
 
 - `XinyuShouji-0.3.3-release.apk`（约 14 MB）
 - 要求 Android 8.0（API 26）及以上
