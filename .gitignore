@@ -1,0 +1,24 @@
+# Android / Gradle
+*.iml
+.gradle/
+local.properties
+.idea/
+.DS_Store
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+.kotlin/
+
+# Signing secrets — never commit these
+keystore.properties
+keystore/
+*.jks
+*.keystore
+
+# Build artifacts (APKs are attached to GitHub Releases instead)
+dist/
+screenshots/
+*.apk
+test-backup.json
+test-import.json
