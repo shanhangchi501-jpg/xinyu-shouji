@@ -25,3 +25,6 @@ test-import.json
 
 # Local-only dev helpers (machine-specific paths)
 启动预览.bat
+
+# Local promo production assets (video, cover, recordings)
+promo/
