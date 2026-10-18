@@ -1,5 +1,9 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.L
+
+import com.innerisle.app.data.tr
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -187,7 +191,7 @@ fun SessionScreen(
                 IconButton(onClick = { showExitDialog = true }) {
                     Icon(
                         Icons.Outlined.Close,
-                        contentDescription = "结束",
+                        contentDescription = tr("结束"),
                         tint = Color.White.copy(alpha = 0.8f)
                     )
                 }
@@ -224,7 +228,7 @@ fun SessionScreen(
                         color = Color.White
                     )
                     Text(
-                        text = if (running) "在场" else "已暂停",
+                        text = if (running) tr("在场") else tr("已暂停"),
                         style = MaterialTheme.typography.labelLarge,
                         color = Color.White.copy(alpha = 0.55f)
                     )
@@ -273,7 +277,7 @@ fun SessionScreen(
                         contentColor = Color.White
                     )
                 ) {
-                    Text("结束")
+                    Text(tr("结束"))
                 }
                 Button(
                     onClick = {
@@ -300,7 +304,7 @@ fun SessionScreen(
                         contentColor = Color(0xFF1B2430)
                     )
                 ) {
-                    Text(if (running) "暂停" else "继续")
+                    Text(if (running) tr("暂停") else tr("继续"))
                 }
             }
             Spacer(Modifier.height(12.dp))
@@ -310,8 +314,8 @@ fun SessionScreen(
     if (showExitDialog) {
         AlertDialog(
             onDismissRequest = { showExitDialog = false },
-            title = { Text("结束这次相处？") },
-            text = { Text("现在结束也可以。已经度过的时间会被记录下来。") },
+            title = { Text(tr("结束这次相处？")) },
+            text = { Text(tr("现在结束也可以。已经度过的时间会被记录下来。")) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -324,12 +328,12 @@ fun SessionScreen(
                         ReminderScheduler.cancelSessionEnd(context)
                     }
                 ) {
-                    Text("结束")
+                    Text(tr("结束"))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showExitDialog = false }) {
-                    Text("继续相处")
+                    Text(tr("继续相处"))
                 }
             }
         )
@@ -458,18 +462,18 @@ private fun RecordContent(
             )
         }
         Text(
-            text = "这次相处结束了",
+            text = tr("这次相处结束了"),
             style = MaterialTheme.typography.headlineMedium
         )
         Text(
-            text = "$tulpaEmoji $tulpaName · ${type.label} · $actualMinutes 分钟",
+            text = L.t("$tulpaEmoji $tulpaName · ${type.label} · $actualMinutes 分钟", "$tulpaEmoji $tulpaName · ${type.label} · $actualMinutes min"),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         SoftCard {
             Text(
-                text = "此刻的感觉",
+                text = tr("此刻的感觉"),
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(Modifier.height(10.dp))
@@ -479,8 +483,8 @@ private fun RecordContent(
         OutlinedTextField(
             value = note,
             onValueChange = onNoteChange,
-            label = { Text("想留一句话吗？（可选）") },
-            placeholder = { Text("一个画面、一种感觉，或者什么都不写。") },
+            label = { Text(tr("想留一句话吗？（可选）")) },
+            placeholder = { Text(tr("一个画面、一种感觉，或者什么都不写。")) },
             minLines = 4,
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors()
@@ -492,13 +496,13 @@ private fun RecordContent(
                 .fillMaxWidth()
                 .height(52.dp)
         ) {
-            Text("保存这次记录")
+            Text(tr("保存这次记录"))
         }
         TextButton(
             onClick = onDiscard,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("不记录，直接返回")
+            Text(tr("不记录，直接返回"))
         }
         Spacer(Modifier.height(24.dp))
     }

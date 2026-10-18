@@ -1,5 +1,9 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.L
+
+import com.innerisle.app.data.tr
+
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -52,12 +56,12 @@ fun KnowledgeScreen(
     readGuideCount: Int
 ) {
     var query by rememberSaveable { mutableStateOf("") }
-    var category by rememberSaveable { mutableStateOf("全部") }
+    var category by rememberSaveable { mutableStateOf(tr("全部")) }
     var expandedConcept by rememberSaveable { mutableStateOf<String?>(null) }
 
     val normalizedQuery = query.trim()
     val articles = Articles.filter { article ->
-        (category == "全部" || article.category == category) &&
+        (category == tr("全部") || article.category == category) &&
             (
                 normalizedQuery.isBlank() ||
                     article.title.contains(normalizedQuery, ignoreCase = true) ||
@@ -70,7 +74,7 @@ fun KnowledgeScreen(
                 )
     }
     val concepts = Concepts.filter { concept ->
-        (category == "全部" || concept.category == category) &&
+        (category == tr("全部") || concept.category == category) &&
             (
                 normalizedQuery.isBlank() ||
                     concept.term.contains(normalizedQuery, ignoreCase = true) ||
@@ -87,8 +91,8 @@ fun KnowledgeScreen(
     ) {
         item {
             SectionTitle(
-                title = "概念与文章",
-                subtitle = "慢慢了解，再慢慢靠近。"
+                title = tr("概念与文章"),
+                subtitle = tr("慢慢了解，再慢慢靠近。")
             )
         }
 
@@ -108,12 +112,12 @@ fun KnowledgeScreen(
                     Spacer(Modifier.width(10.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "从零开始",
+                            text = tr("从零开始"),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Text(
-                            text = "Tulpa 完全创造指南 · $total 章",
+                            text = L.t("Tulpa 完全创造指南 · $total 章", "The Complete Tulpa Creation Guide · $total chapters"),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                         )
@@ -136,7 +140,7 @@ fun KnowledgeScreen(
                 )
                 Spacer(Modifier.height(7.dp))
                 Text(
-                    text = "已读 $readGuideCount / $total 章 · 从准备到进阶，按自己的节奏",
+                    text = L.t("已读 $readGuideCount / $total 章 · 从准备到进阶，按自己的节奏", "Read $readGuideCount / $total chapters · From preparation to advanced practice, at your own pace"),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                 )
@@ -148,13 +152,13 @@ fun KnowledgeScreen(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
             ) {
                 Text(
-                    text = "先说明",
+                    text = tr("先说明"),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = "这里的内容整理自公开社区经验与资料，不是医学结论，也不构成诊断或治疗建议。如果实践让你持续痛苦或影响现实功能，请优先寻求专业帮助。",
+                    text = tr("这里的内容整理自公开社区经验与资料，不是医学结论，也不构成诊断或治疗建议。如果实践让你持续痛苦或影响现实功能，请优先寻求专业帮助。"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f)
                 )
@@ -166,14 +170,14 @@ fun KnowledgeScreen(
                 value = query,
                 onValueChange = { query = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("搜索概念或文章") },
+                placeholder = { Text(tr("搜索概念或文章")) },
                 leadingIcon = {
                     Icon(Icons.Outlined.Search, contentDescription = null)
                 },
                 trailingIcon = {
                     if (query.isNotBlank()) {
                         IconButton(onClick = { query = "" }) {
-                            Icon(Icons.Outlined.Close, contentDescription = "清除")
+                            Icon(Icons.Outlined.Close, contentDescription = tr("清除"))
                         }
                     }
                 },
@@ -203,8 +207,8 @@ fun KnowledgeScreen(
         if (articles.isNotEmpty()) {
             item {
                 SectionTitle(
-                    title = "文章",
-                    subtitle = "${articles.size} 篇 · 点开慢慢读"
+                    title = tr("文章"),
+                    subtitle = L.t("${articles.size} 篇 · 点开慢慢读", "${articles.size} articles · Tap to read at your leisure")
                 )
             }
             items(articles, key = { it.id }) { article ->
@@ -218,8 +222,8 @@ fun KnowledgeScreen(
         if (concepts.isNotEmpty()) {
             item {
                 SectionTitle(
-                    title = "概念词典",
-                    subtitle = "点开卡片，看更完整的解释"
+                    title = tr("概念词典"),
+                    subtitle = tr("点开卡片，看更完整的解释")
                 )
             }
             items(concepts, key = { it.term }) { concept ->
@@ -241,15 +245,15 @@ fun KnowledgeScreen(
             item {
                 EmptyState(
                     emoji = "🔍",
-                    title = "没有找到",
-                    body = "换一个关键词，或者把分类切回“全部”。"
+                    title = tr("没有找到"),
+                    body = tr("换一个关键词，或者把分类切回“全部”。")
                 )
             }
         }
 
         item {
             Text(
-                text = "内容会继续补充。你可以先读一篇，再做一次五分钟的相处。",
+                text = tr("内容会继续补充。你可以先读一篇，再做一次五分钟的相处。"),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
@@ -270,7 +274,7 @@ private fun ArticleCard(
             Pill(article.category)
             Spacer(Modifier.width(8.dp))
             Text(
-                text = "${article.readMinutes} 分钟 · ${article.evidenceLevel.label}",
+                text = L.t("${article.readMinutes} 分钟 · ${article.evidenceLevel.label}", "${article.readMinutes} min · ${article.evidenceLevel.label}"),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -305,7 +309,7 @@ private fun ArticleCard(
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    text = "可配合练习：${article.practice.label}",
+                    text = L.t("可配合练习：${article.practice.label}", "Paired practice: ${article.practice.label}"),
                     style = MaterialTheme.typography.labelLarge,
                     color = article.practice.tint()
                 )

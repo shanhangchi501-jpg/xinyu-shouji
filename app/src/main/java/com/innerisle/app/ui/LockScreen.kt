@@ -1,5 +1,7 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.tr
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -60,10 +62,10 @@ fun LockScreen(
         Spacer(Modifier.weight(1f))
         AppMark(72.dp)
         Spacer(Modifier.height(20.dp))
-        Text(text = "心屿手记已锁定", style = MaterialTheme.typography.headlineSmall)
+        Text(text = tr("心屿手记已锁定"), style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(6.dp))
         Text(
-            text = "输入 4 位 PIN",
+            text = tr("输入 4 位 PIN"),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -86,7 +88,7 @@ fun LockScreen(
         }
         Spacer(Modifier.height(12.dp))
         Text(
-            text = if (error) "PIN 不正确，再试一次。" else " ",
+            text = if (error) tr("PIN 不正确，再试一次。") else " ",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.error,
             textAlign = TextAlign.Center
@@ -110,7 +112,7 @@ fun LockScreen(
         )
         Spacer(Modifier.weight(1f))
         TextButton(onClick = onQuickExit) {
-            Text("快速离开")
+            Text(tr("快速离开"))
         }
     }
 }
@@ -125,7 +127,7 @@ private fun NumberPad(
         listOf("1", "2", "3"),
         listOf("4", "5", "6"),
         listOf("7", "8", "9"),
-        listOf("清空", "0", "⌫")
+        listOf(tr("清空"), "0", "⌫")
     )
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -137,7 +139,7 @@ private fun NumberPad(
                 horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 row.forEach { key ->
-                    val isAction = key == "清空" || key == "⌫"
+                    val isAction = key == tr("清空") || key == "⌫"
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -152,7 +154,7 @@ private fun NumberPad(
                             )
                             .clickable {
                                 when (key) {
-                                    "清空" -> onClear()
+                                    tr("清空") -> onClear()
                                     "⌫" -> onDelete()
                                     else -> onDigit(key)
                                 }

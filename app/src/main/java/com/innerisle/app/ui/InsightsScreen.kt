@@ -1,5 +1,9 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.L
+
+import com.innerisle.app.data.tr
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -61,8 +65,8 @@ fun InsightsScreen(data: AppData) {
     ) {
         item {
             SectionTitle(
-                title = "年轮",
-                subtitle = "看见自己的节奏，而不是别人的进度。"
+                title = tr("年轮"),
+                subtitle = tr("看见自己的节奏，而不是别人的进度。")
             )
         }
 
@@ -76,14 +80,14 @@ fun InsightsScreen(data: AppData) {
                 ) {
                     StatTile(
                         value = "${data.daysTogether()}",
-                        label = "相伴天数",
+                        label = tr("相伴天数"),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
                     )
                     StatTile(
                         value = formatMinutes(data.totalMinutes()),
-                        label = "累计相处",
+                        label = tr("累计相处"),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight(),
@@ -99,14 +103,14 @@ fun InsightsScreen(data: AppData) {
                 ) {
                     StatTile(
                         value = "$totalSessions",
-                        label = "相处次数",
+                        label = tr("相处次数"),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
                     )
                     StatTile(
                         value = "${data.journals.size}",
-                        label = "手记篇数",
+                        label = L.t("手记篇数", "Journals"),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
@@ -118,7 +122,7 @@ fun InsightsScreen(data: AppData) {
         item {
             SoftCard {
                 Text(
-                    text = "最近七天",
+                    text = tr("最近七天"),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(Modifier.height(14.dp))
@@ -158,7 +162,7 @@ fun InsightsScreen(data: AppData) {
                             Spacer(Modifier.height(6.dp))
                             Text(
                                 text = date.format(
-                                    DateTimeFormatter.ofPattern("EE", Locale.CHINA)
+                                    DateTimeFormatter.ofPattern("EE", if (L.isEn) Locale.ENGLISH else Locale.CHINA)
                                 ),
                                 style = MaterialTheme.typography.labelLarge,
                                 fontSize = 10.sp,
@@ -172,14 +176,14 @@ fun InsightsScreen(data: AppData) {
         }
 
         item {
-            SectionTitle(title = "练习分布")
+            SectionTitle(title = tr("练习分布"))
         }
 
         item {
             SoftCard {
                 if (typeCounts.isEmpty()) {
                     Text(
-                        text = "完成第一次相处后，这里会出现你的练习分布。",
+                        text = tr("完成第一次相处后，这里会出现你的练习分布。"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -203,7 +207,7 @@ fun InsightsScreen(data: AppData) {
                             )
                             Spacer(Modifier.width(10.dp))
                             Text(
-                                text = "$count 次",
+                                text = L.t("$count 次", "$count times"),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -215,8 +219,8 @@ fun InsightsScreen(data: AppData) {
 
         item {
             SectionTitle(
-                title = "成长印记",
-                subtitle = "不是任务清单，只是你们走过的一些节点。"
+                title = tr("成长印记"),
+                subtitle = tr("不是任务清单，只是你们走过的一些节点。")
             )
         }
 
@@ -247,7 +251,7 @@ fun InsightsScreen(data: AppData) {
 
         item {
             Text(
-                text = "年轮只记录你愿意留下的部分。\n中断不会扣分，回来就好。",
+                text = tr("年轮只记录你愿意留下的部分。\n中断不会扣分，回来就好。"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

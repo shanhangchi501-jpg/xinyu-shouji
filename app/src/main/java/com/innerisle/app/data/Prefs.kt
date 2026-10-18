@@ -48,6 +48,21 @@ class Prefs(context: Context) {
         get() = sp.getStringSet(KEY_GUIDE_READ, emptySet())?.toSet() ?: emptySet()
         set(value) = sp.edit().putStringSet(KEY_GUIDE_READ, value.toSet()).apply()
 
+    var language: Language
+        get() {
+            val stored = sp.getString(KEY_LANGUAGE, null)
+            if (stored != null) {
+                return runCatching { Language.valueOf(stored) }.getOrDefault(Language.ZH)
+            }
+            // First launch: follow the system language.
+            return if (java.util.Locale.getDefault().language.equals("en", ignoreCase = true)) {
+                Language.EN
+            } else {
+                Language.ZH
+            }
+        }
+        set(value) = sp.edit().putString(KEY_LANGUAGE, value.name).apply()
+
     val hasPin: Boolean
         get() = !sp.getString(KEY_PIN_HASH, null).isNullOrBlank()
 
@@ -106,6 +121,7 @@ class Prefs(context: Context) {
         const val KEY_APP_LOCK = "app_lock_enabled"
         const val KEY_PREVENT_SCREENSHOTS = "prevent_screenshots"
         const val KEY_GUIDE_READ = "guide_read_ids"
+        const val KEY_LANGUAGE = "app_language"
         const val KEY_PIN_SALT = "pin_salt"
         const val KEY_PIN_HASH = "pin_hash"
         const val KEY_PIN_ITERATIONS = "pin_iterations"

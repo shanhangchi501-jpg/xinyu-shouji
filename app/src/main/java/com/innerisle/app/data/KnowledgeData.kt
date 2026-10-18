@@ -9,25 +9,38 @@ data class Concept(
 )
 
 enum class EvidenceLevel(
-    val label: String,
-    val description: String
+    private val labelZh: String,
+    private val descriptionZh: String,
+    private val labelEn: String,
+    private val descriptionEn: String
 ) {
     COMMUNITY(
         "社区经验",
-        "主要来自实践者报告、社区共识与常见做法；没有系统研究支持，也不代表每个实践者都会经历。"
+        "主要来自实践者报告、社区共识与常见做法；没有系统研究支持，也不代表每个实践者都会经历。",
+        "Community experience",
+        "Based mainly on practitioner reports, community consensus, and common practice; not supported by systematic research, and not every practitioner will experience it."
     ),
     SMALL_STUDY(
         "小型研究",
-        "有少量问卷或质性研究可供参考，但样本有限、方法各异，不能作为临床结论。"
+        "有少量问卷或质性研究可供参考，但样本有限、方法各异，不能作为临床结论。",
+        "Small study",
+        "A few surveys or qualitative studies are available, but samples are limited and methods vary; this is not a clinical conclusion."
     ),
     CLINICAL(
         "临床视角",
-        "参考临床与学术讨论，用于区分不同体验和安全边界；不构成诊断或治疗建议。"
+        "参考临床与学术讨论，用于区分不同体验和安全边界；不构成诊断或治疗建议。",
+        "Clinical perspective",
+        "Draws on clinical and academic discussion to distinguish experiences and safety boundaries; not diagnosis or treatment advice."
     ),
     MIXED(
         "混合来源",
-        "同时涉及社区经验、小型研究与临床视角；文中会尽量标注不同说法。"
-    )
+        "同时涉及社区经验、小型研究与临床视角；文中会尽量标注不同说法。",
+        "Mixed sources",
+        "Includes community experience, small studies, and clinical perspectives; different views are noted where possible."
+    );
+
+    val label: String get() = L.t(labelZh, labelEn)
+    val description: String get() = L.t(descriptionZh, descriptionEn)
 }
 
 data class ArticleSource(
@@ -131,9 +144,12 @@ private val SourceCreationGuide = ArticleSource(
     note = "社群实践指南，涵盖创造流程、进阶练习与安全边界。"
 )
 
-val KnowledgeCategories = listOf("全部", "入门", "练习", "进阶", "安全")
+val KnowledgeCategoriesZh = listOf("全部", "入门", "练习", "进阶", "安全")
 
-val Concepts = listOf(
+val KnowledgeCategories: List<String>
+    get() = if (L.isEn) KnowledgeCategoriesEn else KnowledgeCategoriesZh
+
+val ConceptsZh = listOf(
     Concept(
         term = "图帕",
         english = "Tulpa",
@@ -304,7 +320,7 @@ val Concepts = listOf(
     )
 )
 
-val Articles = listOf(
+val ArticlesZh = listOf(
     Article(
         id = "what-is-tulpa",
         title = "Tulpa 是什么？先放下“真假”的问题",
@@ -888,3 +904,9 @@ val Articles = listOf(
         )
     )
 )
+
+val Concepts: List<Concept>
+    get() = if (L.isEn) ConceptsEn else ConceptsZh
+
+val Articles: List<Article>
+    get() = if (L.isEn) ArticlesEn else ArticlesZh

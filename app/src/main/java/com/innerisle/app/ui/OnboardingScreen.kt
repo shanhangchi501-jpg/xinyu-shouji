@@ -1,5 +1,7 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.tr
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,36 +46,36 @@ fun OnboardingScreen(onComplete: (String, String, String) -> Unit) {
     ) {
         Spacer(Modifier.height(8.dp))
         AppMark(84.dp)
-        Text(text = "心屿手记", style = MaterialTheme.typography.displaySmall)
+        Text(text = tr("心屿手记"), style = MaterialTheme.typography.displaySmall)
         Text(
-            text = "一个只属于你和 TA 的离线空间。\n把相处慢慢练成陪伴。",
+            text = tr("一个只属于你和 TA 的离线空间。\n把相处慢慢练成陪伴。"),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         SoftCard {
-            FeatureRow("🌿", "慢慢相处", "用计时、对话和手记，把相处变成日常。")
+            FeatureRow("🌿", tr("慢慢相处"), tr("用计时、对话和手记，把相处变成日常。"))
             Spacer(Modifier.height(14.dp))
-            FeatureRow("🔒", "只留在这里", "数据加密保存在本机；没有账号，没有云同步。")
+            FeatureRow("🔒", tr("只留在这里"), tr("数据加密保存在本机；没有账号，没有云同步。"))
             Spacer(Modifier.height(14.dp))
-            FeatureRow("🫧", "不评判，不催促", "没有排行榜，也不会因为中断而扣分。")
+            FeatureRow("🫧", tr("不评判，不催促"), tr("没有排行榜，也不会因为中断而扣分。"))
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(
-                text = "先给 TA 一个名字",
+                text = tr("先给 TA 一个名字"),
                 style = MaterialTheme.typography.titleLarge
             )
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("TA 的名字") },
-                placeholder = { Text("之后可以改") },
+                label = { Text(tr("TA 的名字")) },
+                placeholder = { Text(tr("之后可以改")) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
             Text(
-                text = "选一个记号",
+                text = tr("选一个记号"),
                 style = MaterialTheme.typography.titleMedium
             )
             EmojiSelector(selected = emoji, onSelect = { emoji = it })
@@ -82,7 +84,7 @@ fun OnboardingScreen(onComplete: (String, String, String) -> Unit) {
 
         SoftCard(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.55f)) {
             Text(
-                text = "在进入之前",
+                text = tr("在进入之前"),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
@@ -90,13 +92,13 @@ fun OnboardingScreen(onComplete: (String, String, String) -> Unit) {
             Row(verticalAlignment = Alignment.Top) {
                 Checkbox(checked = accepted, onCheckedChange = { accepted = it })
                 Text(
-                    text = "我已年满 18 岁，并理解心屿手记不是医疗或心理治疗工具，也不提供诊断或疗效承诺。",
+                    text = tr("我已年满 18 岁，并理解心屿手记不是医疗或心理治疗工具，也不提供诊断或疗效承诺。"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
             Text(
-                text = "如果你正经历显著痛苦、功能受损，或听到无法控制的声音，请优先寻求专业帮助。",
+                text = tr("如果你正经历显著痛苦、功能受损，或听到无法控制的声音，请优先寻求专业帮助。"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
             )
@@ -109,11 +111,11 @@ fun OnboardingScreen(onComplete: (String, String, String) -> Unit) {
                 .fillMaxWidth()
                 .height(54.dp)
         ) {
-            Text("进入心屿手记")
+            Text(tr("进入心屿手记"))
         }
 
         Text(
-            text = "你的手记、对话与练习记录不会被上传。\n导出文件由你主动选择保存位置，请注意妥善保管。",
+            text = tr("你的手记、对话与练习记录不会被上传。\n导出文件由你主动选择保存位置，请注意妥善保管。"),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

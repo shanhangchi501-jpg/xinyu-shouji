@@ -1,5 +1,9 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.L
+
+import com.innerisle.app.data.tr
+
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -75,35 +79,42 @@ fun Context.findActivity(): Activity? {
     return null
 }
 
-fun formatDate(millis: Long, pattern: String = "M月d日"): String =
-    Instant.ofEpochMilli(millis)
+fun formatDate(millis: Long, pattern: String? = null): String {
+    val resolved = pattern ?: if (L.isEn) "MMM d" else "M月d日"
+    val locale = if (L.isEn) Locale.ENGLISH else Locale.CHINA
+    return Instant.ofEpochMilli(millis)
         .atZone(ZoneId.systemDefault())
-        .format(DateTimeFormatter.ofPattern(pattern, Locale.CHINA))
+        .format(DateTimeFormatter.ofPattern(resolved, locale))
+}
 
-fun formatFullDate(millis: Long): String = formatDate(millis, "yyyy年M月d日 HH:mm")
+fun formatFullDate(millis: Long): String =
+    formatDate(millis, if (L.isEn) "yyyy-MM-dd HH:mm" else "yyyy年M月d日 HH:mm")
 
 fun formatMinutes(minutes: Int): String =
     if (minutes >= 60) {
         val hours = minutes / 60
         val rest = minutes % 60
-        if (rest == 0) "$hours 小时" else "$hours 小时 $rest 分"
+        if (rest == 0) L.t("$hours 小时", "$hours hr") else L.t("$hours 小时 $rest 分", "$hours hr $rest min")
     } else {
-        "$minutes 分钟"
+        L.t("$minutes 分钟", "$minutes min")
     }
 
 fun formatReminderTime(hour: Int, minute: Int): String =
     String.format(Locale.US, "%02d:%02d", hour, minute)
 
 fun greetingForHour(hour: Int): String = when (hour) {
-    in 5..10 -> "早上好"
-    in 11..13 -> "中午好"
-    in 14..17 -> "下午好"
-    in 18..22 -> "晚上好"
-    else -> "夜深了"
+    in 5..10 -> tr("早上好")
+    in 11..13 -> tr("中午好")
+    in 14..17 -> tr("下午好")
+    in 18..22 -> tr("晚上好")
+    else -> tr("夜深了")
 }
 
 fun todayLabel(): String = LocalDate.now().format(
-    DateTimeFormatter.ofPattern("M月d日 EEEE", Locale.CHINA)
+    DateTimeFormatter.ofPattern(
+        if (L.isEn) "MMM d, EEEE" else "M月d日 EEEE",
+        if (L.isEn) Locale.ENGLISH else Locale.CHINA
+    )
 )
 
 fun String.asColor(fallback: Color = Color(0xFF8A9A7B)): Color =
@@ -430,7 +441,7 @@ fun AppTopBar(
         navigationIcon = {
             if (onBack != null) {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "返回")
+                    Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = tr("返回"))
                 }
             }
         },

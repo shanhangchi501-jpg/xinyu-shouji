@@ -1,7 +1,10 @@
 package com.innerisle.app
 
+import com.innerisle.app.data.tr
+
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
@@ -31,16 +34,29 @@ import com.innerisle.app.ui.MainApp
 import com.innerisle.app.ui.OnboardingScreen
 import com.innerisle.app.ui.WarmBackground
 import com.innerisle.app.ui.findActivity
+import com.innerisle.app.data.L
+import com.innerisle.app.data.Language
+import com.innerisle.app.data.Prefs
 import com.innerisle.app.ui.theme.InnerIsleTheme
 import com.innerisle.app.work.NotificationHelper
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
 
     private val viewModel: AppViewModel by viewModels()
 
+    override fun attachBaseContext(newBase: Context) {
+        val language = Prefs(newBase).language
+        val locale = if (language == Language.EN) Locale.ENGLISH else Locale.SIMPLIFIED_CHINESE
+        val config = Configuration(newBase.resources.configuration)
+        config.setLocale(locale)
+        super.attachBaseContext(newBase.createConfigurationContext(config))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        L.language = Prefs(this).language
         NotificationHelper.createChannels(this)
         setContent {
             InnerIsleTheme {
@@ -111,12 +127,12 @@ private fun SplashScreen() {
         AppMark(88.dp)
         Spacer(Modifier.height(20.dp))
         Text(
-            text = "心屿手记",
+            text = tr("心屿手记"),
             style = MaterialTheme.typography.displaySmall
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "只属于你们的内部空间",
+            text = tr("只属于你们的内部空间"),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center

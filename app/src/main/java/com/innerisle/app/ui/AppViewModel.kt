@@ -1,11 +1,15 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.tr
+
 import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.innerisle.app.data.AppData
 import com.innerisle.app.data.JournalEntry
+import com.innerisle.app.data.L
+import com.innerisle.app.data.Language
 import com.innerisle.app.data.Member
 import com.innerisle.app.data.MemberRole
 import com.innerisle.app.data.Prefs
@@ -33,7 +37,8 @@ data class UiSettings(
     val appLockEnabled: Boolean,
     val preventScreenshots: Boolean,
     val hasPin: Boolean,
-    val guideReadIds: Set<String> = emptySet()
+    val guideReadIds: Set<String> = emptySet(),
+    val language: Language = Language.ZH
 ) {
     companion object {
         fun from(prefs: Prefs) = UiSettings(
@@ -45,7 +50,8 @@ data class UiSettings(
             appLockEnabled = prefs.appLockEnabled,
             preventScreenshots = prefs.preventScreenshots,
             hasPin = prefs.hasPin,
-            guideReadIds = prefs.guideReadIds
+            guideReadIds = prefs.guideReadIds,
+            language = prefs.language
         )
     }
 }
@@ -91,7 +97,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         val host = Member(
             id = "host",
             role = MemberRole.HOST,
-            name = "我",
+            name = L.t("我", "Me"),
             emoji = "🫧",
             color = "#7E8CA0"
         )
@@ -116,7 +122,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun completeOnboarding(tulpaName: String, emoji: String, color: String) {
-        val name = tulpaName.trim().ifBlank { "未命名" }
+        val name = tulpaName.trim().ifBlank { L.t("未命名", "Unnamed") }
         update { current ->
             val members = current.members.toMutableList()
             if (members.none { it.role == MemberRole.HOST }) {
@@ -125,7 +131,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                     Member(
                         id = "host",
                         role = MemberRole.HOST,
-                        name = "我",
+                        name = L.t("我", "Me"),
                         emoji = "🫧",
                         color = "#7E8CA0"
                     )
@@ -159,7 +165,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             current.copy(
                 members = current.members + Member(
                     role = MemberRole.TULPA,
-                    name = name.trim().ifBlank { "未命名" },
+                    name = name.trim().ifBlank { L.t("未命名", "Unnamed") },
                     emoji = emoji,
                     color = color,
                     form = form.trim(),
@@ -265,6 +271,29 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         refreshSettings()
     }
 
+    fun setLanguage(language: Language) {
+        prefs.language = language
+        L.language = language
+        update { current ->
+            current.copy(
+                members = current.members.map { member ->
+                    if (member.role == MemberRole.HOST) {
+                        when {
+                            language == Language.EN && member.name == "我" ->
+                                member.copy(name = "Me")
+                            language == Language.ZH && member.name == "Me" ->
+                                member.copy(name = "我")
+                            else -> member
+                        }
+                    } else {
+                        member
+                    }
+                }
+            )
+        }
+        refreshSettings()
+    }
+
     fun enableAppLock(pin: String) {
         prefs.setPin(pin)
         prefs.appLockEnabled = true
@@ -327,7 +356,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             val text = json.encodeToString(_data.value)
             app.contentResolver.openOutputStream(uri)?.use {
                 it.write(text.toByteArray(Charsets.UTF_8))
-            } ?: error("无法打开目标文件")
+            } ?: error(tr("无法打开目标文件"))
         }
     }
 
@@ -335,7 +364,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         runCatching {
             val text = app.contentResolver.openInputStream(uri)?.use {
                 it.readBytes().toString(Charsets.UTF_8)
-            } ?: error("无法读取文件")
+            } ?: error(tr("无法读取文件"))
             val parsed = json.decodeFromString<AppData>(text)
             val withHost = ensureHost(parsed)
             _data.value = withHost

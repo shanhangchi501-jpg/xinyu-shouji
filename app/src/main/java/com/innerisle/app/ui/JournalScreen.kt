@@ -1,5 +1,7 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.tr
+
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -68,14 +70,14 @@ fun JournalScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 SectionTitle(
-                    title = "手记",
-                    subtitle = "写下你们之间的细小变化。",
+                    title = tr("手记"),
+                    subtitle = tr("写下你们之间的细小变化。"),
                     modifier = Modifier.weight(1f)
                 )
                 FilledTonalButton(onClick = onAdd) {
                     Icon(Icons.Outlined.Add, contentDescription = null)
                     Spacer(Modifier.width(4.dp))
-                    Text("写一篇")
+                    Text(tr("写一篇"))
                 }
             }
         }
@@ -86,7 +88,7 @@ fun JournalScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 AuthorChip(
-                    label = "全部",
+                    label = tr("全部"),
                     selected = selectedAuthor == "__all__",
                     onClick = { selectedAuthor = "__all__" }
                 )
@@ -104,9 +106,9 @@ fun JournalScreen(
             item {
                 EmptyState(
                     emoji = "📖",
-                    title = "还没有手记",
-                    body = "不用等到想清楚了才写。一句话、一个瞬间，都可以留在这里。",
-                    actionLabel = "写第一篇",
+                    title = tr("还没有手记"),
+                    body = tr("不用等到想清楚了才写。一句话、一个瞬间，都可以留在这里。"),
+                    actionLabel = tr("写第一篇"),
                     onAction = onAdd
                 )
             }
@@ -151,7 +153,7 @@ private fun JournalCard(
             )
             Spacer(Modifier.width(6.dp))
             Text(
-                text = author?.name ?: "未知",
+                text = author?.name ?: tr("未知"),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -177,7 +179,7 @@ private fun JournalCard(
         }
         Spacer(Modifier.height(6.dp))
         Text(
-            text = entry.body.ifBlank { "（没有正文）" },
+            text = entry.body.ifBlank { tr("（没有正文）") },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 5,
@@ -221,12 +223,12 @@ fun JournalEditScreen(
         containerColor = Color.Transparent,
         topBar = {
             AppTopBar(
-                title = if (existing == null) "写手记" else "编辑手记",
+                title = if (existing == null) tr("写手记") else tr("编辑手记"),
                 onBack = onBack,
                 actions = {
                     if (existing != null) {
                         IconButton(onClick = { showDeleteDialog = true }) {
-                            Icon(Icons.Outlined.Delete, contentDescription = "删除")
+                            Icon(Icons.Outlined.Delete, contentDescription = tr("删除"))
                         }
                     }
                 }
@@ -242,7 +244,7 @@ fun JournalEditScreen(
                 .padding(horizontal = 20.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Text(text = "这是谁的手记", style = MaterialTheme.typography.titleMedium)
+            Text(text = tr("这是谁的手记"), style = MaterialTheme.typography.titleMedium)
             Row(
                 modifier = Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -261,7 +263,7 @@ fun JournalEditScreen(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
                 ) {
                     Text(
-                        text = "不知道写什么？",
+                        text = tr("不知道写什么？"),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
@@ -276,7 +278,7 @@ fun JournalEditScreen(
                             promptIndex = (promptIndex + 1) % DailyPrompts.size
                         }
                     ) {
-                        Text("换一个")
+                        Text(tr("换一个"))
                     }
                 }
             }
@@ -284,26 +286,26 @@ fun JournalEditScreen(
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("标题（可选）") },
+                label = { Text(tr("标题（可选）")) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = body,
                 onValueChange = { body = it },
-                label = { Text("想记住什么") },
+                label = { Text(tr("想记住什么")) },
                 minLines = 7,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Text(text = "此刻的心情", style = MaterialTheme.typography.titleMedium)
+            Text(text = tr("此刻的心情"), style = MaterialTheme.typography.titleMedium)
             MoodSelector(selected = mood, onSelect = { mood = it })
 
             OutlinedTextField(
                 value = tags,
                 onValueChange = { tags = it },
-                label = { Text("标签（用逗号分隔）") },
-                placeholder = { Text("日常，第一次对话，幻境") },
+                label = { Text(tr("标签（用逗号分隔）")) },
+                placeholder = { Text(tr("日常，第一次对话，幻境")) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -330,7 +332,7 @@ fun JournalEditScreen(
                     .fillMaxWidth()
                     .height(52.dp)
             ) {
-                Text("保存")
+                Text(tr("保存"))
             }
             Spacer(Modifier.height(24.dp))
         }
@@ -339,8 +341,8 @@ fun JournalEditScreen(
     if (showDeleteDialog && existing != null) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("删除这篇手记？") },
-            text = { Text("删除后无法恢复。") },
+            title = { Text(tr("删除这篇手记？")) },
+            text = { Text(tr("删除后无法恢复。")) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -348,12 +350,12 @@ fun JournalEditScreen(
                         onDelete(existing.id)
                     }
                 ) {
-                    Text("删除", color = MaterialTheme.colorScheme.error)
+                    Text(tr("删除"), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("取消")
+                    Text(tr("取消"))
                 }
             }
         )

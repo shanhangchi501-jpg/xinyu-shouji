@@ -1,5 +1,9 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.L
+
+import com.innerisle.app.data.tr
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -71,8 +75,8 @@ fun CompanionScreen(
     ) {
         item {
             SectionTitle(
-                title = "相处",
-                subtitle = "不追求时长，只在意在场。计时只是容器，走神也没关系。"
+                title = tr("相处"),
+                subtitle = tr("不追求时长，只在意在场。计时只是容器，走神也没关系。")
             )
         }
 
@@ -80,9 +84,9 @@ fun CompanionScreen(
             item {
                 EmptyState(
                     emoji = "🌙",
-                    title = "还没有可以相处的 TA",
-                    body = "先创建一位 Tulpa 的档案，所有练习与手记都会和 TA 关联。",
-                    actionLabel = "创建档案",
+                    title = tr("还没有可以相处的 TA"),
+                    body = tr("先创建一位 Tulpa 的档案，所有练习与手记都会和 TA 关联。"),
+                    actionLabel = tr("创建档案"),
                     onAction = onAddMember
                 )
             }
@@ -111,7 +115,7 @@ fun CompanionScreen(
         }
 
         item {
-            SectionTitle(title = "今天想做什么")
+            SectionTitle(title = tr("今天想做什么"))
         }
 
         item {
@@ -144,7 +148,7 @@ fun CompanionScreen(
         item {
             SoftCard {
                 Text(
-                    text = "这次留多久",
+                    text = tr("这次留多久"),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(Modifier.height(10.dp))
@@ -156,7 +160,7 @@ fun CompanionScreen(
                         FilterChip(
                             selected = selectedMinutes == minutes,
                             onClick = { selectedMinutes = minutes },
-                            label = { Text("$minutes 分") },
+                            label = { Text(L.t("$minutes 分", "$minutes min")) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                                 selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer
@@ -171,15 +175,15 @@ fun CompanionScreen(
                         .fillMaxWidth()
                         .height(52.dp)
                 ) {
-                    Text("开始这次相处")
+                    Text(tr("开始这次相处"))
                 }
             }
         }
 
         item {
             SectionTitle(
-                title = "最近的相处",
-                subtitle = "只和自己比较，不追赶任何人。"
+                title = tr("最近的相处"),
+                subtitle = tr("只和自己比较，不追赶任何人。")
             )
         }
 
@@ -203,11 +207,11 @@ fun CompanionScreen(
                         Spacer(Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "还没有记录",
+                                text = tr("还没有记录"),
                                 style = MaterialTheme.typography.titleMedium
                             )
                             Text(
-                                text = "第一次可以从五分钟开始。",
+                                text = tr("第一次可以从五分钟开始。"),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -219,7 +223,7 @@ fun CompanionScreen(
                             onStart(SessionType.NARRATION, selectedTulpa.id, 5)
                         }
                     ) {
-                        Text("先相处五分钟 →")
+                        Text(tr("先相处五分钟 →"))
                     }
                 }
             }
@@ -255,7 +259,7 @@ fun CompanionScreen(
                             }
                             Column(horizontalAlignment = Alignment.End) {
                                 Text(
-                                    text = "${session.minutes} 分钟",
+                                    text = L.t("${session.minutes} 分钟", "${session.minutes} min"),
                                     style = MaterialTheme.typography.labelLarge,
                                     color = MaterialTheme.colorScheme.primary
                                 )

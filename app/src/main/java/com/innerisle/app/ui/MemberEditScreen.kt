@@ -1,5 +1,7 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.tr
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -58,15 +60,15 @@ fun MemberEditScreen(
         topBar = {
             AppTopBar(
                 title = when {
-                    existing == null -> "新建档案"
-                    isHost -> "我的档案"
-                    else -> "编辑档案"
+                    existing == null -> tr("新建档案")
+                    isHost -> tr("我的档案")
+                    else -> tr("编辑档案")
                 },
                 onBack = onBack,
                 actions = {
                     if (existing != null && !isHost) {
                         IconButton(onClick = { showDeleteDialog = true }) {
-                            Icon(Icons.Outlined.Delete, contentDescription = "删除档案")
+                            Icon(Icons.Outlined.Delete, contentDescription = tr("删除档案"))
                         }
                     }
                 }
@@ -87,9 +89,9 @@ fun MemberEditScreen(
             ) {
                 Text(
                     text = if (isHost) {
-                        "这是你的档案。名字和记号会出现在手记与首页里。"
+                        tr("这是你的档案。名字和记号会出现在手记与首页里。")
                     } else {
-                        "TA 会随着相处慢慢变化，不需要一次设定完整。留下的空白也可以是一种邀请。"
+                        tr("TA 会随着相处慢慢变化，不需要一次设定完整。留下的空白也可以是一种邀请。")
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -99,52 +101,52 @@ fun MemberEditScreen(
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("名字") },
+                label = { Text(tr("名字")) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Text(text = "记号", style = MaterialTheme.typography.titleMedium)
+            Text(text = tr("记号"), style = MaterialTheme.typography.titleMedium)
             EmojiSelector(selected = emoji, onSelect = { emoji = it })
             ColorSelector(selected = color, onSelect = { color = it })
 
             OutlinedTextField(
                 value = form,
                 onValueChange = { form = it },
-                label = { Text("形象") },
-                placeholder = { Text("TA 看起来是什么样？也可以留空，让 TA 自己决定。") },
+                label = { Text(tr("形象")) },
+                placeholder = { Text(tr("TA 看起来是什么样？也可以留空，让 TA 自己决定。")) },
                 minLines = 2,
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = personality,
                 onValueChange = { personality = it },
-                label = { Text("性格与价值观") },
-                placeholder = { Text("温柔、直接、爱吐槽……或者只写一两个词。") },
+                label = { Text(tr("性格与价值观")) },
+                placeholder = { Text(tr("温柔、直接、爱吐槽……或者只写一两个词。")) },
                 minLines = 2,
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = voice,
                 onValueChange = { voice = it },
-                label = { Text("声音与说话方式") },
-                placeholder = { Text("语速、用词、口头禅，或者“还没确定”。") },
+                label = { Text(tr("声音与说话方式")) },
+                placeholder = { Text(tr("语速、用词、口头禅，或者“还没确定”。")) },
                 minLines = 2,
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = likes,
                 onValueChange = { likes = it },
-                label = { Text("喜欢的事物") },
-                placeholder = { Text("音乐、天气、食物、某个小动作……") },
+                label = { Text(tr("喜欢的事物")) },
+                placeholder = { Text(tr("音乐、天气、食物、某个小动作……")) },
                 minLines = 2,
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text("备注") },
-                placeholder = { Text("任何想留给以后看的细节。") },
+                label = { Text(tr("备注")) },
+                placeholder = { Text(tr("任何想留给以后看的细节。")) },
                 minLines = 3,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -170,7 +172,7 @@ fun MemberEditScreen(
                     .fillMaxWidth()
                     .height(52.dp)
             ) {
-                Text("保存档案")
+                Text(tr("保存档案"))
             }
             Spacer(Modifier.height(24.dp))
         }
@@ -179,10 +181,10 @@ fun MemberEditScreen(
     if (showDeleteDialog && existing != null) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("删除这个档案？") },
+            title = { Text(tr("删除这个档案？")) },
             text = {
                 Text(
-                    "档案会被删除。已有的相处记录和手记会保留，但会显示为未知成员。"
+                    tr("档案会被删除。已有的相处记录和手记会保留，但会显示为未知成员。")
                 )
             },
             confirmButton = {
@@ -192,12 +194,12 @@ fun MemberEditScreen(
                         onDelete(existing.id)
                     }
                 ) {
-                    Text("删除", color = MaterialTheme.colorScheme.error)
+                    Text(tr("删除"), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("取消")
+                    Text(tr("取消"))
                 }
             }
         )

@@ -1,5 +1,9 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.L
+
+import com.innerisle.app.data.tr
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,7 +40,7 @@ fun ArticleDetailScreen(
 
     Scaffold(
         containerColor = Color.Transparent,
-        topBar = { AppTopBar(title = "阅读", onBack = onBack) }
+        topBar = { AppTopBar(title = tr("阅读"), onBack = onBack) }
     ) { padding ->
         if (article == null) {
             Column(
@@ -46,9 +50,9 @@ fun ArticleDetailScreen(
             ) {
                 EmptyState(
                     emoji = "📄",
-                    title = "没有找到这篇文章",
-                    body = "它可能已经被移动或更新。",
-                    actionLabel = "返回",
+                    title = tr("没有找到这篇文章"),
+                    body = tr("它可能已经被移动或更新。"),
+                    actionLabel = tr("返回"),
                     onAction = onBack
                 )
             }
@@ -68,12 +72,12 @@ fun ArticleDetailScreen(
                 Pill(article.category)
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = "${article.readMinutes} 分钟阅读",
+                    text = L.t("${article.readMinutes} 分钟阅读", "${article.readMinutes} min read"),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.weight(1f))
-                Pill("证据：${article.evidenceLevel.label}")
+                Pill(L.t("证据：${article.evidenceLevel.label}", "Evidence: ${article.evidenceLevel.label}"))
             }
 
             Text(
@@ -103,10 +107,10 @@ fun ArticleDetailScreen(
                             modifier = Modifier.weight(1f)
                         )
                         if (section.communityView) {
-                            Pill("社区经验")
+                            Pill(tr("社区经验"))
                         }
                         if (section.researchView) {
-                            Pill("研究视角")
+                            Pill(tr("研究视角"))
                         }
                     }
                 }
@@ -133,20 +137,20 @@ fun ArticleDetailScreen(
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = "把读到的放进一次相处",
+                            text = tr("把读到的放进一次相处"),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                     }
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        text = "建议尝试：${practice.label}。不用追求时长，五分钟也算数。",
+                        text = L.t("建议尝试：${practice.label}。不用追求时长，五分钟也算数。", "Try this: ${practice.label}. No need to chase duration—five minutes counts."),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f)
                     )
                     Spacer(Modifier.height(12.dp))
                     Button(onClick = { onPractice(practice) }) {
-                        Text("去相处")
+                        Text(tr("去相处"))
                     }
                 }
             }
@@ -155,12 +159,12 @@ fun ArticleDetailScreen(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
             ) {
                 Text(
-                    text = "资料与证据",
+                    text = tr("资料与证据"),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = "证据等级：${article.evidenceLevel.label}",
+                    text = L.t("证据等级：${article.evidenceLevel.label}", "Evidence level: ${article.evidenceLevel.label}"),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -173,7 +177,7 @@ fun ArticleDetailScreen(
                 if (article.sources.isNotEmpty()) {
                     Spacer(Modifier.height(12.dp))
                     Text(
-                        text = "参考来源",
+                        text = tr("参考来源"),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -201,7 +205,7 @@ fun ArticleDetailScreen(
             }
 
             Text(
-                text = "本文整理自公开社区经验与资料，不构成医疗建议，也不能替代专业心理支持。",
+                text = tr("本文整理自公开社区经验与资料，不构成医疗建议，也不能替代专业心理支持。"),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp)

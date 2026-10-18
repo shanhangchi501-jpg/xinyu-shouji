@@ -1,5 +1,7 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.tr
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -153,7 +155,7 @@ fun MainApp(
                             selected = tab == 0,
                             onClick = { tab = 0 },
                             icon = { Icon(Icons.Outlined.Home, contentDescription = null) },
-                            label = { Text("首页") }
+                            label = { Text(tr("首页")) }
                         )
                         NavigationBarItem(
                             selected = tab == 1,
@@ -161,7 +163,7 @@ fun MainApp(
                             icon = {
                                 Icon(Icons.Outlined.SelfImprovement, contentDescription = null)
                             },
-                            label = { Text("相处") }
+                            label = { Text(tr("相处")) }
                         )
                         NavigationBarItem(
                             selected = tab == 2,
@@ -169,19 +171,19 @@ fun MainApp(
                             icon = {
                                 Icon(Icons.AutoMirrored.Outlined.MenuBook, contentDescription = null)
                             },
-                            label = { Text("手记") }
+                            label = { Text(tr("手记")) }
                         )
                         NavigationBarItem(
                             selected = tab == 3,
                             onClick = { tab = 3 },
                             icon = { Icon(Icons.Outlined.Insights, contentDescription = null) },
-                            label = { Text("年轮") }
+                            label = { Text(tr("年轮")) }
                         )
                         NavigationBarItem(
                             selected = tab == 4,
                             onClick = { tab = 4 },
                             icon = { Icon(Icons.Outlined.Lightbulb, contentDescription = null) },
-                            label = { Text("了解") }
+                            label = { Text(tr("了解")) }
                         )
                     }
                 }

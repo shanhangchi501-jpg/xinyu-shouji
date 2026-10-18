@@ -5,7 +5,7 @@
 > 把相处慢慢练成陪伴。  
 > 不打卡、不排名、不催促。
 
-当前版本：**0.3.3（正式签名 release）**
+当前版本：**0.4.0（正式签名 release）**
 
 ---
 
@@ -13,7 +13,7 @@
 
 在 [GitHub Releases](https://github.com/shanhangchi501-jpg/xinyu-shouji/releases) 下载：
 
-- `XinyuShouji-0.3.3-release.apk`（约 14 MB）
+- `XinyuShouji-0.4.0-release.apk`（约 14 MB）
 - 要求 Android 8.0（API 26）及以上
 - 安装时需允许当前文件管理器或浏览器「安装未知应用」
 
@@ -27,7 +27,7 @@
 
 - 包名：`com.innerisle.app`
 - 签名证书 SHA-256：`89f6fa7ed2ccd1438d5ffff387a08c3c4a30c021bb11bc0b5caa4cfb898e2492`
-- APK SHA-256：`f8c9e05c462089e53de31129d2614e21e92808325b2738025502431f7b0c05f2`
+- APK SHA-256：`85ec7eade46f157130df7a21634c7d870e0d0f7ef308266110fe50dac62acafa`
 
 ## 已实现
 
@@ -43,6 +43,7 @@
 - **隐私与安全**：4 位 PIN 应用锁、防截屏、快速离开、离开 30 秒自动锁定。
 - **本地加密**：数据文件使用 Android Keystore 密钥做 AES-GCM 加密。
 - **数据自主**：JSON 导出 / 导入、删除全部数据。
+- **中英双语**：首次启动跟随系统语言，可在设置中切换中文 / English；界面、17 章指南、13 篇文章与 24 个概念均有完整英文版本。
 - **深色模式**、Material 3 动态留白与衬线标题。
 
 ## 隐私设计
@@ -53,6 +54,13 @@
 - PIN 只用于界面保护；真正的数据保护来自 Android 系统沙盒与 Keystore。
 - 通知可脱敏，通知中不显示 Tulpa 名字与内容。
 - 导出文件未加密，由用户主动选择保存位置，请妥善保管。
+
+## 语言 / Language
+
+- 首次启动会跟随系统语言：系统为英文时默认显示 English，否则显示中文。
+- 设置 → Language 可在「中文 / English」之间切换，切换后应用会自动重启。
+- 英文版包含完整界面、17 章指南、13 篇文章、24 个概念与安全说明，内容与中文版对应。
+- 语言选择只保存在本机；不会上传任何语言或使用数据。
 
 ## 技术栈
 
@@ -86,12 +94,12 @@ app/build/outputs/apk/debug/app-debug.apk
 app/build/outputs/apk/release/app-release.apk
 ```
 
-正式版会被复制为 `dist/XinyuShouji-0.3.3-release.apk`。签名文件与密码不提交到仓库，见下方「签名与升级」。
+正式版会被复制为 `dist/XinyuShouji-0.4.0-release.apk`。签名文件与密码不提交到仓库，见下方「签名与升级」。
 
 ## 安装
 
 ```bash
-adb install -r dist/XinyuShouji-0.3.3-release.apk
+adb install -r dist/XinyuShouji-0.4.0-release.apk
 ```
 
 或把 APK 传到手机后手动安装（需允许安装未知来源应用）。
@@ -187,6 +195,7 @@ app/src/main/java/com/innerisle/app/
 - 浅色模式：半透明卡片内部不再出现矩形色块
 - 布局对齐：首页/年轮数据格子等高，相处练习格子等高，「成长印记」卡片等高，「最近的相处」空状态卡片完整对称
 - 「成长印记」浅色/深色模式下模块底色与文字对比度加深
+- 英文版：启动、引导、首页、相处、手记、年轮、了解、指南、文章、概念、设置、关于与深色模式完整走查
 - 开启每日提醒、授予通知权限、WorkManager 任务调度
 - 设置 PIN、锁定、解锁
 - 导出 JSON、导入 JSON 并覆盖数据
@@ -199,7 +208,7 @@ app/src/main/java/com/innerisle/app/
 - 首版**没有云备份 / 多设备同步**（有意如此，优先隐私）。
 - 没有生物识别、桌面小组件、引导音频；这些适合作为下一版。
 - 系统强杀进程后，未保存的编辑内容可能丢失；正常旋转屏幕已处理。
-- 仅提供中文界面。
+- 中英双语；其他语言暂未支持。
 - 「了解」中的证据等级是对资料来源类型的粗略标注，不是系统综述或循证分级；引用链接仅作来源说明，App 本身没有联网权限，无法在应用内打开。
 - 「从零开始」指南整理自社群实践资料（百度贴吧 tulpa 吧、多意识体系统 Wiki 等），属于经验性内容，不是临床指南，也不能保证每个人的进度与结果。
 - 未接入任何 AI；Tulpa 的回应始终由用户自己书写。

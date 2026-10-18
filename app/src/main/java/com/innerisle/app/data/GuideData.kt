@@ -24,13 +24,16 @@ private fun s(
     researchView = research
 )
 
-val GuideParts = listOf(
+val GuidePartsZh = listOf(
     "开始之前" to "先理解，再决定。",
     "从零创造" to "从人格、叙述到成声，一步一步来。",
     "进阶与安全" to "投影、附体、交换，以及如何回到现实。"
 )
 
-val GuideChapters = listOf(
+val GuideParts: List<Pair<String, String>>
+    get() = if (L.isEn) GuidePartsEn else GuidePartsZh
+
+val GuideChaptersZh = listOf(
     GuideChapter(
         id = "decision",
         part = "开始之前",
@@ -626,3 +629,6 @@ val GuideChapters = listOf(
         )
     )
 )
+
+val GuideChapters: List<GuideChapter>
+    get() = if (L.isEn) GuideChaptersEn else GuideChaptersZh

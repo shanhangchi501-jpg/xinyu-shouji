@@ -1,5 +1,7 @@
 package com.innerisle.app.work
 
+import com.innerisle.app.data.tr
+
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -20,6 +22,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.innerisle.app.MainActivity
 import com.innerisle.app.R
+import com.innerisle.app.data.L
 import com.innerisle.app.data.Prefs
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -96,13 +99,14 @@ class ReminderWorker(
 
     override fun doWork(): Result {
         val prefs = Prefs(applicationContext)
+        L.language = prefs.language
         if (!prefs.reminderEnabled) return Result.success()
         NotificationHelper.createChannels(applicationContext)
-        val title = if (prefs.stealthNotifications) "提醒" else "心屿手记"
+        val title = if (prefs.stealthNotifications) tr("提醒") else tr("心屿手记")
         val text = if (prefs.stealthNotifications) {
-            "该休息一下了。"
+            tr("该休息一下了。")
         } else {
-            "给 TA 留一点时间。"
+            tr("给 TA 留一点时间。")
         }
         NotificationHelper.notify(
             applicationContext,
@@ -122,12 +126,13 @@ class SessionTimerWorker(
 
     override fun doWork(): Result {
         val prefs = Prefs(applicationContext)
+        L.language = prefs.language
         NotificationHelper.createChannels(applicationContext)
-        val title = if (prefs.stealthNotifications) "提醒" else "心屿手记"
+        val title = if (prefs.stealthNotifications) tr("提醒") else tr("心屿手记")
         val text = if (prefs.stealthNotifications) {
-            "时间到了。"
+            tr("时间到了。")
         } else {
-            "这次的相处时间到了，记得回来看看。"
+            tr("这次的相处时间到了，记得回来看看。")
         }
         NotificationHelper.notify(
             applicationContext,

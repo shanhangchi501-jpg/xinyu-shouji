@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Xinyu Shouji</string>
+    <string name="notification_channel_reminders">Daily reminders</string>
+    <string name="notification_channel_sessions">Session timer</string>
+    <string name="notification_channel_description">Gentle reminders from Xinyu Shouji</string>
+</resources>

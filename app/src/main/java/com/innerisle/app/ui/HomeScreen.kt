@@ -1,5 +1,9 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.L
+
+import com.innerisle.app.data.tr
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -81,7 +85,7 @@ fun HomeScreen(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "心屿手记",
+                        text = tr("心屿手记"),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -100,7 +104,7 @@ fun HomeScreen(
                     IconButton(onClick = onLock) {
                         Icon(
                             Icons.Outlined.Lock,
-                            contentDescription = "锁定",
+                            contentDescription = tr("锁定"),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -108,7 +112,7 @@ fun HomeScreen(
                 IconButton(onClick = onOpenSettings) {
                     Icon(
                         Icons.Outlined.Settings,
-                        contentDescription = "设置",
+                        contentDescription = tr("设置"),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -118,16 +122,16 @@ fun HomeScreen(
         item {
             if (tulpa == null) {
                 SoftCard(onClick = onAddMember) {
-                    Text(text = "还没有 TA 的档案", style = MaterialTheme.typography.titleLarge)
+                    Text(text = tr("还没有 TA 的档案"), style = MaterialTheme.typography.titleLarge)
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        text = "先创建一位 Tulpa，再开始记录你们的相处。",
+                        text = tr("先创建一位 Tulpa，再开始记录你们的相处。"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(Modifier.height(12.dp))
                     Text(
-                        text = "创建档案 →",
+                        text = tr("创建档案 →"),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -158,12 +162,12 @@ fun HomeScreen(
                         Spacer(Modifier.width(10.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "从零开始",
+                                text = tr("从零开始"),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                             Text(
-                                text = "已读 $guideReadCount / ${GuideChapters.size} 章 · 先读准备与安全，再开始练习",
+                                text = L.t("已读 $guideReadCount / ${GuideChapters.size} 章 · 先读准备与安全，再开始练习", "Read $guideReadCount / ${GuideChapters.size} chapters · Start with preparation and safety, then practice"),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                             )
@@ -187,14 +191,14 @@ fun HomeScreen(
             ) {
                 StatTile(
                     value = "${data.daysTogether()}",
-                    label = "相伴天数",
+                    label = tr("相伴天数"),
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
                 )
                 StatTile(
                     value = formatMinutes(data.totalMinutes()),
-                    label = "累计相处",
+                    label = tr("累计相处"),
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight(),
@@ -202,7 +206,7 @@ fun HomeScreen(
                 )
                 StatTile(
                     value = "${data.journals.size}",
-                    label = "手记",
+                    label = L.t("手记", "Journals"),
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
@@ -217,8 +221,8 @@ fun HomeScreen(
             ) {
                 QuickActionCard(
                     icon = Icons.Outlined.ChatBubbleOutline,
-                    title = "叙述 10 分钟",
-                    subtitle = "把今天讲给 TA",
+                    title = tr("叙述 10 分钟"),
+                    subtitle = tr("把今天讲给 TA"),
                     modifier = Modifier.weight(1f),
                     onClick = {
                         if (tulpa != null) {
@@ -228,8 +232,8 @@ fun HomeScreen(
                 )
                 QuickActionCard(
                     icon = Icons.Outlined.Edit,
-                    title = "写一篇手记",
-                    subtitle = "留住一个小细节",
+                    title = tr("写一篇手记"),
+                    subtitle = tr("留住一个小细节"),
                     modifier = Modifier.weight(1f),
                     onClick = onWriteJournal
                 )
@@ -244,7 +248,7 @@ fun HomeScreen(
                     Text(text = "✦", style = MaterialTheme.typography.titleLarge)
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text = "今日一问",
+                        text = tr("今日一问"),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
@@ -262,7 +266,7 @@ fun HomeScreen(
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 ) {
-                    Text("写下来 →")
+                    Text(tr("写下来 →"))
                 }
             }
         }
@@ -273,7 +277,7 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 SectionTitle(
-                    title = "最近的手记",
+                    title = tr("最近的手记"),
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -283,7 +287,7 @@ fun HomeScreen(
             item {
                 SoftCard {
                     Text(
-                        text = "还没有手记。第一次不用写得完整，一句话也可以。",
+                        text = tr("还没有手记。第一次不用写得完整，一句话也可以。"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -294,7 +298,7 @@ fun HomeScreen(
                 val entry = recentJournals[index]
                 JournalPreview(
                     entry = entry,
-                    authorName = data.memberById(entry.authorId)?.name ?: "未知",
+                    authorName = data.memberById(entry.authorId)?.name ?: tr("未知"),
                     authorEmoji = data.memberById(entry.authorId)?.emoji ?: "🌙",
                     onClick = { onOpenJournal(entry.id) }
                 )
@@ -317,7 +321,7 @@ fun HomeScreen(
                 )
                 Spacer(Modifier.width(5.dp))
                 Text(
-                    text = "所有内容仅保存在本机",
+                    text = tr("所有内容仅保存在本机"),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
@@ -361,7 +365,7 @@ private fun HeroCard(
             }
             Spacer(Modifier.width(10.dp))
             Text(
-                text = "与 $tulpaName 的第 $daysTogether 天",
+                text = L.t("与 $tulpaName 的第 $daysTogether 天", "Day $daysTogether with $tulpaName"),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
             )
@@ -370,16 +374,16 @@ private fun HeroCard(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "今天，想和 TA\n怎么相处？",
+                    text = tr("今天，想和 TA\n怎么相处？"),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = if (todayMinutes > 0) {
-                        "今天已经留出了 $todayMinutes 分钟。"
+                        L.t("今天已经留出了 $todayMinutes 分钟。", "You've set aside $todayMinutes minutes today.")
                     } else {
-                        "不用做很多，十分钟也算数。"
+                        tr("不用做很多，十分钟也算数。")
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
@@ -408,7 +412,7 @@ private fun HeroCard(
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
-            Text("开始相处")
+            Text(tr("开始相处"))
         }
     }
 }
@@ -476,7 +480,7 @@ private fun JournalPreview(
         }
         Spacer(Modifier.height(4.dp))
         Text(
-            text = entry.body.ifBlank { "（没有正文）" },
+            text = entry.body.ifBlank { tr("（没有正文）") },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 2,

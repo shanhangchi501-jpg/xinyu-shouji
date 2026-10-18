@@ -1,5 +1,9 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.L
+
+import com.innerisle.app.data.tr
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,7 +58,7 @@ fun GuideListScreen(
 
     Scaffold(
         containerColor = Color.Transparent,
-        topBar = { AppTopBar(title = "从零开始", onBack = onBack) }
+        topBar = { AppTopBar(title = tr("从零开始"), onBack = onBack) }
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -76,12 +80,12 @@ fun GuideListScreen(
                         Spacer(Modifier.width(10.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Tulpa 完全创造指南",
+                                text = tr("Tulpa 完全创造指南"),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                             Text(
-                                text = "从准备到进阶，一步一步来",
+                                text = tr("从准备到进阶，一步一步来"),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                             )
@@ -99,20 +103,20 @@ fun GuideListScreen(
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = "已读 $readCount / $total 章 · 不必赶进度，按自己的节奏",
+                        text = L.t("已读 $readCount / $total 章 · 不必赶进度，按自己的节奏", "Read $readCount / $total chapters · No rush—go at your own pace"),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                     )
                     Spacer(Modifier.height(12.dp))
                     Button(onClick = { onOpenChapter(nextChapter.id) }) {
-                        Text(if (readCount == 0) "开始阅读" else "继续阅读")
+                        Text(if (readCount == 0) tr("开始阅读") else tr("继续阅读"))
                     }
                 }
             }
 
             item {
                 Text(
-                    text = "这份指南整理自社群实践资料，覆盖创造前的决定、基础训练、进阶练习与安全边界。你可以按顺序阅读，也可以直接跳到需要的那一章。",
+                    text = tr("这份指南整理自社群实践资料，覆盖创造前的决定、基础训练、进阶练习与安全边界。你可以按顺序阅读，也可以直接跳到需要的那一章。"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -141,13 +145,13 @@ fun GuideListScreen(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
                 ) {
                     Text(
-                        text = "阅读之前",
+                        text = tr("阅读之前"),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        text = "这些内容来自社群经验与公开资料，不是医学结论，也不构成诊断或治疗建议。若练习让你持续痛苦、影响现实功能，或开始分不清现实与想象，请优先寻求专业帮助。",
+                        text = tr("这些内容来自社群经验与公开资料，不是医学结论，也不构成诊断或治疗建议。若练习让你持续痛苦、影响现实功能，或开始分不清现实与想象，请优先寻求专业帮助。"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f)
                     )
@@ -182,7 +186,7 @@ private fun GuideChapterCard(
                 if (read) {
                     Icon(
                         imageVector = Icons.Outlined.CheckCircle,
-                        contentDescription = "已读",
+                        contentDescription = tr("已读"),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
                     )
@@ -212,19 +216,19 @@ private fun GuideChapterCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "${chapter.minutes} 分钟",
+                        text = L.t("${chapter.minutes} 分钟", "${chapter.minutes} min"),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     chapter.practice?.let { practice ->
                         Text(
-                            text = "可配合${practice.label}",
+                            text = L.t("可配合${practice.label}", "Works with ${practice.label}"),
                             style = MaterialTheme.typography.labelLarge,
                             color = practice.tint()
                         )
                     }
                     if (chapter.safety) {
-                        Pill("安全")
+                        Pill(tr("安全"))
                     }
                 }
             }
@@ -258,7 +262,7 @@ fun GuideChapterScreen(
         containerColor = Color.Transparent,
         topBar = {
             AppTopBar(
-                title = chapter?.part ?: "指南",
+                title = chapter?.part ?: tr("指南"),
                 onBack = onBack
             )
         }
@@ -271,9 +275,9 @@ fun GuideChapterScreen(
             ) {
                 EmptyState(
                     emoji = "📘",
-                    title = "没有找到这一章",
-                    body = "它可能已经被移动或更新。",
-                    actionLabel = "返回",
+                    title = tr("没有找到这一章"),
+                    body = tr("它可能已经被移动或更新。"),
+                    actionLabel = tr("返回"),
                     onAction = onBack
                 )
             }
@@ -297,7 +301,7 @@ fun GuideChapterScreen(
                     Pill(chapter.part)
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text = "第 ${index + 1} / ${GuideChapters.size} 章 · ${chapter.minutes} 分钟",
+                        text = L.t("第 ${index + 1} / ${GuideChapters.size} 章 · ${chapter.minutes} 分钟", "Chapter ${index + 1} / ${GuideChapters.size} · ${chapter.minutes} min"),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -305,7 +309,7 @@ fun GuideChapterScreen(
                     if (read) {
                         Icon(
                             imageVector = Icons.Outlined.CheckCircle,
-                            contentDescription = "已读",
+                            contentDescription = tr("已读"),
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
@@ -333,13 +337,13 @@ fun GuideChapterScreen(
                         containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.55f)
                     ) {
                         Text(
-                            text = "安全提示",
+                            text = tr("安全提示"),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onErrorContainer
                         )
                         Spacer(Modifier.height(6.dp))
                         Text(
-                            text = "这一章涉及进阶或风险内容。请先确保状态稳定，约定停机词，并在出现不适时立即暂停。任何练习都不应以现实功能为代价。",
+                            text = tr("这一章涉及进阶或风险内容。请先确保状态稳定，约定停机词，并在出现不适时立即暂停。任何练习都不应以现实功能为代价。"),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.85f)
                         )
@@ -362,10 +366,10 @@ fun GuideChapterScreen(
                                     modifier = Modifier.weight(1f)
                                 )
                                 if (section.communityView) {
-                                    Pill("社区经验")
+                                    Pill(tr("社区经验"))
                                 }
                                 if (section.researchView) {
-                                    Pill("研究视角")
+                                    Pill(tr("研究视角"))
                                 }
                             }
                             Spacer(Modifier.height(8.dp))
@@ -388,7 +392,7 @@ fun GuideChapterScreen(
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
                     ) {
                         Text(
-                            text = "本章自检",
+                            text = tr("本章自检"),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onTertiaryContainer
                         )
@@ -430,20 +434,20 @@ fun GuideChapterScreen(
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                text = "把这一章放进一次相处",
+                                text = tr("把这一章放进一次相处"),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onTertiaryContainer
                             )
                         }
                         Spacer(Modifier.height(6.dp))
                         Text(
-                            text = "建议尝试：${practice.label}。不用追求时长，五分钟也算数。",
+                            text = L.t("建议尝试：${practice.label}。不用追求时长，五分钟也算数。", "Try this: ${practice.label}. No need to chase duration—five minutes counts."),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f)
                         )
                         Spacer(Modifier.height(12.dp))
                         Button(onClick = { onPractice(practice) }) {
-                            Text("去相处")
+                            Text(tr("去相处"))
                         }
                     }
                 }
@@ -459,7 +463,7 @@ fun GuideChapterScreen(
                         contentDescription = null
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text(if (read) "已完成 · 点此取消" else "标记为已读")
+                    Text(if (read) tr("已完成 · 点此取消") else tr("标记为已读"))
                 }
             }
 
@@ -475,7 +479,7 @@ fun GuideChapterScreen(
                             onClick = { onOpenChapter(previous.id) },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("上一章")
+                            Text(tr("上一章"))
                         }
                     } else {
                         Spacer(Modifier.weight(1f))
@@ -485,7 +489,7 @@ fun GuideChapterScreen(
                             onClick = { onOpenChapter(next.id) },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("下一章")
+                            Text(tr("下一章"))
                         }
                     } else {
                         Spacer(Modifier.weight(1f))
@@ -495,7 +499,7 @@ fun GuideChapterScreen(
 
             item {
                 Text(
-                    text = "本指南依据《Tulpa 完全创造指南》基础篇 / 实践篇 / 提高篇与《图帕（Tulpa）》整理，并结合了心屿手记的安全边界说明。它是社群经验，不构成医疗建议，也不能替代专业心理支持。",
+                    text = tr("本指南依据《Tulpa 完全创造指南》基础篇 / 实践篇 / 提高篇与《图帕（Tulpa）》整理，并结合了心屿手记的安全边界说明。它是社群经验，不构成医疗建议，也不能替代专业心理支持。"),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Start,
