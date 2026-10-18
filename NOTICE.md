@@ -2,7 +2,7 @@
 
 ## 代码
 
-心屿的源代码以 MIT 许可证发布，详见 [LICENSE](LICENSE)。
+心屿手记的源代码以 MIT 许可证发布，详见 [LICENSE](LICENSE)。
 
 ## 应用内文字
 

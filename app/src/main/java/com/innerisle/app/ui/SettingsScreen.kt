@@ -306,7 +306,7 @@ fun SettingsScreen(
                     SettingsRow(
                         icon = Icons.AutoMirrored.Outlined.ExitToApp,
                         title = "快速离开",
-                        subtitle = "关闭心屿并回到桌面",
+                        subtitle = "关闭心屿手记并回到桌面",
                         onClick = onQuickExit
                     )
                 }
@@ -349,7 +349,7 @@ fun SettingsScreen(
                 SettingsSection(title = "关于") {
                     SettingsRow(
                         icon = Icons.Outlined.Info,
-                        title = "关于心屿",
+                        title = "关于心屿手记",
                         subtitle = "隐私承诺、安全边界与版本信息",
                         onClick = onAbout,
                         trailing = {
@@ -365,7 +365,7 @@ fun SettingsScreen(
 
             item {
                 Text(
-                    text = "心屿 ${BuildConfig.VERSION_NAME} · 本地优先 · 无账号 · 无云同步",
+                    text = "心屿手记 ${BuildConfig.VERSION_NAME} · 本地优先 · 无账号 · 无云同步",
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.fillMaxWidth()
@@ -554,7 +554,7 @@ private fun PinSetupDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
-                    text = "设置一个 4 位 PIN。它用于打开心屿时的界面保护；数据本身由 Android Keystore 加密。",
+                    text = "设置一个 4 位 PIN。它用于打开心屿手记时的界面保护；数据本身由 Android Keystore 加密。",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -1,11 +1,11 @@
-# 心屿 · Inner Isle
+# 心屿手记
 
 一个本地优先的 Tulpa 相处与记录 Android 应用。
 
 > 把相处慢慢练成陪伴。  
 > 不打卡、不排名、不催促。
 
-当前版本：**0.3.2（正式签名 release）**
+当前版本：**0.3.3（正式签名 release）**
 
 ---
 
@@ -13,7 +13,7 @@
 
 在仓库的 **Releases** 页面下载：
 
-- `InnerIsle-0.3.2-release.apk`（约 14 MB）
+- `XinyuShouji-0.3.3-release.apk`（约 14 MB）
 - 要求 Android 8.0（API 26）及以上
 - 安装时需允许当前文件管理器或浏览器「安装未知应用」
 
@@ -27,7 +27,7 @@
 
 - 包名：`com.innerisle.app`
 - 签名证书 SHA-256：`89f6fa7ed2ccd1438d5ffff387a08c3c4a30c021bb11bc0b5caa4cfb898e2492`
-- APK SHA-256：`c49102ada508d0cc3465ec7c942a80c716208fef906d872cd4a11aec6278b1ba`
+- APK SHA-256：`f8c9e05c462089e53de31129d2614e21e92808325b2738025502431f7b0c05f2`
 
 ## 已实现
 
@@ -86,12 +86,12 @@ app/build/outputs/apk/debug/app-debug.apk
 app/build/outputs/apk/release/app-release.apk
 ```
 
-正式版会被复制为 `dist/InnerIsle-0.3.2-release.apk`。签名文件与密码不提交到仓库，见下方「签名与升级」。
+正式版会被复制为 `dist/XinyuShouji-0.3.3-release.apk`。签名文件与密码不提交到仓库，见下方「签名与升级」。
 
 ## 安装
 
 ```bash
-adb install -r dist/InnerIsle-0.3.2-release.apk
+adb install -r dist/XinyuShouji-0.3.3-release.apk
 ```
 
 或把 APK 传到手机后手动安装（需允许安装未知来源应用）。
@@ -120,14 +120,14 @@ adb install -r dist/InnerIsle-0.3.2-release.apk
 
    ```bash
    ./gradlew assembleRelease
-   cp app/build/outputs/apk/release/app-release.apk dist/InnerIsle-X.Y.Z-release.apk
+   cp app/build/outputs/apk/release/app-release.apk dist/XinyuShouji-X.Y.Z-release.apk
    ```
 
 4. 校验签名与 SHA-256：
 
    ```bash
-   $ANDROID_HOME/build-tools/35.0.0/apksigner.bat verify --print-certs dist/InnerIsle-X.Y.Z-release.apk
-   sha256sum dist/InnerIsle-X.Y.Z-release.apk
+   $ANDROID_HOME/build-tools/35.0.0/apksigner.bat verify --print-certs dist/XinyuShouji-X.Y.Z-release.apk
+   sha256sum dist/XinyuShouji-X.Y.Z-release.apk
    ```
 
 5. 提交并打 tag：
@@ -139,7 +139,7 @@ adb install -r dist/InnerIsle-0.3.2-release.apk
    git push origin main --tags
    ```
 
-6. 在 GitHub 的 Releases 页面创建 `vX.Y.Z`，上传 `dist/InnerIsle-X.Y.Z-release.apk`，粘贴 `release-notes/vX.Y.Z.md` 的内容。
+6. 在 GitHub 的 Releases 页面创建 `vX.Y.Z`，上传 `dist/XinyuShouji-X.Y.Z-release.apk`，粘贴 `release-notes/vX.Y.Z.md` 的内容。
 
 ## 项目结构
 
@@ -205,11 +205,11 @@ app/src/main/java/com/innerisle/app/
 - 未接入任何 AI；Tulpa 的回应始终由用户自己书写。
 - 不通过应用商店分发；GitHub Releases 侧载安装，后续版本需使用同一签名覆盖升级。
 - 尚未覆盖大量真实机型；Release 构建目前只在 Android 15 模拟器验证。
-- 心屿不是医疗器械，不提供诊断、治疗或疗效承诺。
+- 心屿手记不是医疗器械，不提供诊断、治疗或疗效承诺。
 
 ## 安全边界
 
-Tulpa 是一种主观心理实践。心屿只提供记录、计时和回顾工具，不能替代专业心理支持或治疗。
+Tulpa 是一种主观心理实践。心屿手记只提供记录、计时和回顾工具，不能替代专业心理支持或治疗。
 
 如果你正经历显著痛苦、功能受损，或听到无法控制的声音，请优先联系当地专业心理服务或紧急服务。
 

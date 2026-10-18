@@ -111,7 +111,7 @@ private fun SplashScreen() {
         AppMark(88.dp)
         Spacer(Modifier.height(20.dp))
         Text(
-            text = "心屿",
+            text = "心屿手记",
             style = MaterialTheme.typography.displaySmall
         )
         Spacer(Modifier.height(8.dp))

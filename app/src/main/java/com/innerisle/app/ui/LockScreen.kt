@@ -60,7 +60,7 @@ fun LockScreen(
         Spacer(Modifier.weight(1f))
         AppMark(72.dp)
         Spacer(Modifier.height(20.dp))
-        Text(text = "心屿已锁定", style = MaterialTheme.typography.headlineSmall)
+        Text(text = "心屿手记已锁定", style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(6.dp))
         Text(
             text = "输入 4 位 PIN",

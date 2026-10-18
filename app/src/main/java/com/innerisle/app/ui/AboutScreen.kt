@@ -23,7 +23,7 @@ import com.innerisle.app.BuildConfig
 fun AboutScreen(onBack: () -> Unit) {
     Scaffold(
         containerColor = Color.Transparent,
-        topBar = { AppTopBar(title = "关于心屿", onBack = onBack) }
+        topBar = { AppTopBar(title = "关于心屿手记", onBack = onBack) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -35,7 +35,7 @@ fun AboutScreen(onBack: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             AppMark(76.dp)
-            Text(text = "心屿", style = MaterialTheme.typography.headlineMedium)
+            Text(text = "心屿手记", style = MaterialTheme.typography.headlineMedium)
             Text(
                 text = "版本 ${BuildConfig.VERSION_NAME}",
                 style = MaterialTheme.typography.bodyMedium,
@@ -44,7 +44,7 @@ fun AboutScreen(onBack: () -> Unit) {
 
             AboutSection(
                 title = "我们想做的",
-                body = "心屿是一个本地优先的 Tulpa 相处工具。它不催促你打卡，也不把你和别人的进度放在一起比较。\n\n" +
+                body = "心屿手记是一个本地优先的 Tulpa 相处工具。它不催促你打卡，也不把你和别人的进度放在一起比较。\n\n" +
                     "你可以在里面记录相处、写下对话、保存那些只有你们懂的细节。关系是慢慢长出来的。"
             )
 
@@ -64,7 +64,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "Tulpa 是一种主观心理实践。心屿不提供医疗建议、诊断或疗效承诺，也不能替代专业心理支持或治疗。\n\n" +
+                    text = "Tulpa 是一种主观心理实践。心屿手记不提供医疗建议、诊断或疗效承诺，也不能替代专业心理支持或治疗。\n\n" +
                         "如果你正经历显著痛苦、功能受损，或听到无法控制的声音，请优先联系当地专业心理服务或紧急服务。",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
@@ -85,7 +85,7 @@ fun AboutScreen(onBack: () -> Unit) {
 
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "心屿 · 本地优先 · 无账号 · 无云同步",
+                text = "心屿手记 · 本地优先 · 无账号 · 无云同步",
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

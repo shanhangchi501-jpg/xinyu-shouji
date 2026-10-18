@@ -495,7 +495,7 @@ fun GuideChapterScreen(
 
             item {
                 Text(
-                    text = "本指南依据《Tulpa 完全创造指南》基础篇 / 实践篇 / 提高篇与《图帕（Tulpa）》整理，并结合了心屿的安全边界说明。它是社群经验，不构成医疗建议，也不能替代专业心理支持。",
+                    text = "本指南依据《Tulpa 完全创造指南》基础篇 / 实践篇 / 提高篇与《图帕（Tulpa）》整理，并结合了心屿手记的安全边界说明。它是社群经验，不构成医疗建议，也不能替代专业心理支持。",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Start,

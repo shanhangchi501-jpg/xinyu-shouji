@@ -44,7 +44,7 @@ fun OnboardingScreen(onComplete: (String, String, String) -> Unit) {
     ) {
         Spacer(Modifier.height(8.dp))
         AppMark(84.dp)
-        Text(text = "心屿", style = MaterialTheme.typography.displaySmall)
+        Text(text = "心屿手记", style = MaterialTheme.typography.displaySmall)
         Text(
             text = "一个只属于你和 TA 的离线空间。\n把相处慢慢练成陪伴。",
             style = MaterialTheme.typography.bodyLarge,
@@ -90,7 +90,7 @@ fun OnboardingScreen(onComplete: (String, String, String) -> Unit) {
             Row(verticalAlignment = Alignment.Top) {
                 Checkbox(checked = accepted, onCheckedChange = { accepted = it })
                 Text(
-                    text = "我已年满 18 岁，并理解心屿不是医疗或心理治疗工具，也不提供诊断或疗效承诺。",
+                    text = "我已年满 18 岁，并理解心屿手记不是医疗或心理治疗工具，也不提供诊断或疗效承诺。",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
@@ -109,7 +109,7 @@ fun OnboardingScreen(onComplete: (String, String, String) -> Unit) {
                 .fillMaxWidth()
                 .height(54.dp)
         ) {
-            Text("进入心屿")
+            Text("进入心屿手记")
         }
 
         Text(

@@ -98,7 +98,7 @@ class ReminderWorker(
         val prefs = Prefs(applicationContext)
         if (!prefs.reminderEnabled) return Result.success()
         NotificationHelper.createChannels(applicationContext)
-        val title = if (prefs.stealthNotifications) "提醒" else "心屿"
+        val title = if (prefs.stealthNotifications) "提醒" else "心屿手记"
         val text = if (prefs.stealthNotifications) {
             "该休息一下了。"
         } else {
@@ -123,7 +123,7 @@ class SessionTimerWorker(
     override fun doWork(): Result {
         val prefs = Prefs(applicationContext)
         NotificationHelper.createChannels(applicationContext)
-        val title = if (prefs.stealthNotifications) "提醒" else "心屿"
+        val title = if (prefs.stealthNotifications) "提醒" else "心屿手记"
         val text = if (prefs.stealthNotifications) {
             "时间到了。"
         } else {

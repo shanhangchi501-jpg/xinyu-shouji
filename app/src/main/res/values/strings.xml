@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">心屿</string>
+    <string name="app_name">心屿手记</string>
     <string name="notification_channel_reminders">日常提醒</string>
     <string name="notification_channel_sessions">相处计时</string>
-    <string name="notification_channel_description">来自心屿的轻声提醒</string>
+    <string name="notification_channel_description">来自心屿手记的轻声提醒</string>
 </resources>
