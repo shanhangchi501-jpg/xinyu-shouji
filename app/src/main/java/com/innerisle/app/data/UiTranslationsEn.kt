@@ -272,5 +272,7 @@ val UiTranslationsEn: Map<String, String> = mapOf(
     "防止截屏" to "Prevent screenshots",
     "隐私承诺、安全边界与版本信息" to "Privacy commitments, safety boundaries, and version info",
     "音乐、天气、食物、某个小动作……" to "Music, weather, food, a little gesture...",
-    "首页" to "Home"
+    "首页" to "Home",
+    "相遇日期" to "Together since",
+    "相伴天数会从这一天开始计算。" to "Days together are counted from this date."
 )

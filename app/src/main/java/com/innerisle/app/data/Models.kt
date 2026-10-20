@@ -24,8 +24,18 @@ data class Member(
     val voice: String = "",
     val likes: String = "",
     val notes: String = "",
-    val createdAt: Long = System.currentTimeMillis()
-)
+    val createdAt: Long = System.currentTimeMillis(),
+    val startedAt: Long = 0L
+) {
+    /** The date the relationship started. Older data falls back to createdAt. */
+    fun relationshipStart(): Long = if (startedAt > 0L) startedAt else createdAt
+
+    fun daysTogether(): Int {
+        val start = relationshipStart().toLocalDate()
+        val days = java.time.temporal.ChronoUnit.DAYS.between(start, LocalDate.now()).toInt() + 1
+        return days.coerceAtLeast(1)
+    }
+}
 
 @Serializable
 enum class SessionType(
@@ -214,7 +224,7 @@ data class AppData(
         .size
 
     fun daysTogether(): Int {
-        val first = tulpas.minOfOrNull { it.createdAt } ?: return 0
+        val first = tulpas.minOfOrNull { it.relationshipStart() } ?: return 0
         val start = first.toLocalDate()
         val days = java.time.temporal.ChronoUnit.DAYS.between(start, LocalDate.now()).toInt() + 1
         return days.coerceAtLeast(1)

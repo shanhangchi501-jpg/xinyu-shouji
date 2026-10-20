@@ -159,7 +159,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         personality: String,
         voice: String,
         likes: String,
-        notes: String
+        notes: String,
+        startedAt: Long = 0L
     ) {
         update { current ->
             current.copy(
@@ -172,7 +173,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                     personality = personality.trim(),
                     voice = voice.trim(),
                     likes = likes.trim(),
-                    notes = notes.trim()
+                    notes = notes.trim(),
+                    startedAt = startedAt
                 )
             )
         }

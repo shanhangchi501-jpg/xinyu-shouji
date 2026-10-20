@@ -5,7 +5,7 @@
 > 把相处慢慢练成陪伴。  
 > 不打卡、不排名、不催促。
 
-当前版本：**0.4.0（正式签名 release）**
+当前版本：**0.4.1（正式签名 release）**
 
 ---
 
@@ -13,7 +13,7 @@
 
 在 [GitHub Releases](https://github.com/shanhangchi501-jpg/xinyu-shouji/releases) 下载：
 
-- `XinyuShouji-0.4.0-release.apk`（约 14 MB）
+- `XinyuShouji-0.4.1-release.apk`（约 14 MB）
 - 要求 Android 8.0（API 26）及以上
 - 安装时需允许当前文件管理器或浏览器「安装未知应用」
 
@@ -27,12 +27,12 @@
 
 - 包名：`com.innerisle.app`
 - 签名证书 SHA-256：`89f6fa7ed2ccd1438d5ffff387a08c3c4a30c021bb11bc0b5caa4cfb898e2492`
-- APK SHA-256：`85ec7eade46f157130df7a21634c7d870e0d0f7ef308266110fe50dac62acafa`
+- APK SHA-256：`235f9b74081efb8db7e2f7cc6ec7eada8ef01cab51a4e671a10052150c562c03`
 
 ## 已实现
 
 - **引导与安全确认**：18+、非医疗工具、痛苦时优先求助的提示。
-- **Tulpa 多档案**：名字、记号、形象、性格、声音、喜好、备注。
+- **Tulpa 多档案**：名字、记号、形象、性格、声音、喜好、备注；可设置「相遇日期」，相伴天数从这一天开始计算。
 - **六种相处练习**：叙述、对话、形象、幻境、投射、静心。
 - **相处计时器**：5/10/15/20/30/45 分钟，可暂停、提前结束；结束后记录心情与一句话。
 - **手记**：宿主 / Tulpa 作者切换、标题、正文、心情、标签、每日提示。
@@ -94,12 +94,12 @@ app/build/outputs/apk/debug/app-debug.apk
 app/build/outputs/apk/release/app-release.apk
 ```
 
-正式版会被复制为 `dist/XinyuShouji-0.4.0-release.apk`。签名文件与密码不提交到仓库，见下方「签名与升级」。
+正式版会被复制为 `dist/XinyuShouji-0.4.1-release.apk`。签名文件与密码不提交到仓库，见下方「签名与升级」。
 
 ## 安装
 
 ```bash
-adb install -r dist/XinyuShouji-0.4.0-release.apk
+adb install -r dist/XinyuShouji-0.4.1-release.apk
 ```
 
 或把 APK 传到手机后手动安装（需允许安装未知来源应用）。

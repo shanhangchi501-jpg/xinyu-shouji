@@ -1,7 +1,10 @@
 package com.innerisle.app.ui
 
+import com.innerisle.app.data.L
+
 import com.innerisle.app.data.tr
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,10 +34,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.innerisle.app.data.AppData
 import com.innerisle.app.data.Member
 import com.innerisle.app.data.MemberRole
+import java.util.Calendar
 
 @Composable
 fun MemberEditScreen(
@@ -45,7 +51,11 @@ fun MemberEditScreen(
 ) {
     val existing = data.members.firstOrNull { it.id == memberId }
     val isHost = existing?.role == MemberRole.HOST
+    val context = LocalContext.current
     var name by rememberSaveable { mutableStateOf(existing?.name.orEmpty()) }
+    var startedAt by rememberSaveable {
+        mutableStateOf(existing?.relationshipStart() ?: System.currentTimeMillis())
+    }
     var emoji by rememberSaveable { mutableStateOf(existing?.emoji ?: "🌙") }
     var color by rememberSaveable { mutableStateOf(existing?.color ?: "#7E8CA0") }
     var form by rememberSaveable { mutableStateOf(existing?.form.orEmpty()) }
@@ -106,6 +116,51 @@ fun MemberEditScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            if (!isHost) {
+                Column {
+                    Text(
+                        text = tr("相遇日期"),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    OutlinedButton(
+                        onClick = {
+                            val calendar = Calendar.getInstance().apply {
+                                timeInMillis = startedAt
+                            }
+                            val dialog = DatePickerDialog(
+                                context,
+                                { _, year, month, day ->
+                                    startedAt = Calendar.getInstance().apply {
+                                        set(year, month, day, 0, 0, 0)
+                                        set(Calendar.MILLISECOND, 0)
+                                    }.timeInMillis
+                                },
+                                calendar.get(Calendar.YEAR),
+                                calendar.get(Calendar.MONTH),
+                                calendar.get(Calendar.DAY_OF_MONTH)
+                            )
+                            dialog.datePicker.maxDate = System.currentTimeMillis()
+                            dialog.show()
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            formatDate(
+                                startedAt,
+                                if (L.isEn) "MMM d, yyyy" else "yyyy年M月d日"
+                            )
+                        )
+                    }
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = tr("相伴天数会从这一天开始计算。"),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
             Text(text = tr("记号"), style = MaterialTheme.typography.titleMedium)
             EmojiSelector(selected = emoji, onSelect = { emoji = it })
             ColorSelector(selected = color, onSelect = { color = it })
@@ -163,7 +218,8 @@ fun MemberEditScreen(
                             personality = personality.trim(),
                             voice = voice.trim(),
                             likes = likes.trim(),
-                            notes = notes.trim()
+                            notes = notes.trim(),
+                            startedAt = if (isHost) base.startedAt else startedAt
                         )
                     )
                 },

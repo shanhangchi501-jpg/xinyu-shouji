@@ -264,7 +264,8 @@ fun MainApp(
                         personality = member.personality,
                         voice = member.voice,
                         likes = member.likes,
-                        notes = member.notes
+                        notes = member.notes,
+                        startedAt = member.startedAt
                     )
                 } else {
                     viewModel.updateMember(member)

@@ -141,7 +141,7 @@ fun HomeScreen(
                     tulpaName = tulpa.name,
                     tulpaEmoji = tulpa.emoji,
                     todayMinutes = todayMinutes,
-                    daysTogether = data.daysTogether(),
+                    daysTogether = tulpa.daysTogether(),
                     onStart = onOpenCompanion
                 )
             }
@@ -190,7 +190,7 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 StatTile(
-                    value = "${data.daysTogether()}",
+                    value = "${tulpa?.daysTogether() ?: 0}",
                     label = tr("相伴天数"),
                     modifier = Modifier
                         .weight(1f)
