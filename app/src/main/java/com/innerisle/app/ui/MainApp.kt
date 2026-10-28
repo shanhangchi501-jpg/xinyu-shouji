@@ -3,7 +3,20 @@ package com.innerisle.app.ui
 import com.innerisle.app.data.tr
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
@@ -29,6 +42,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.innerisle.app.data.AppData
 import com.innerisle.app.data.SessionType
+import com.innerisle.app.ui.theme.IsleMotion
+import com.innerisle.app.ui.theme.LocalReduceMotion
 
 sealed interface Overlay {
     data object Settings : Overlay
@@ -116,6 +131,60 @@ private val OverlaySaver = listSaver<Overlay?, String>(
     }
 )
 
+private val Overlay?.depth: Int
+    get() = when (this) {
+        null -> 0
+        Overlay.Settings -> 1
+        is Overlay.About -> 2
+        is Overlay.MemberEdit -> 2
+        is Overlay.JournalEdit -> 2
+        is Overlay.Article -> 2
+        is Overlay.Guide -> if (chapterId == null) 2 else 3
+        is Overlay.Session -> 2
+    }
+
+private fun Overlay?.routeKey(): String = when (this) {
+    null -> "root"
+    Overlay.Settings -> "settings"
+    is Overlay.About -> "about"
+    is Overlay.MemberEdit -> "member:${id.orEmpty()}:$returnToSettings"
+    is Overlay.JournalEdit -> "journal:${id.orEmpty()}"
+    is Overlay.Article -> "article:$id"
+    is Overlay.Guide -> "guide:${chapterId.orEmpty()}"
+    is Overlay.Session -> "session:${type.name}:$tulpaId:$minutes"
+}
+
+private fun AnimatedContentTransitionScope<Overlay?>.overlayTransform(
+    reduceMotion: Boolean
+): ContentTransform {
+    if (reduceMotion) return EnterTransition.None togetherWith ExitTransition.None
+
+    val forward = targetState.depth >= initialState.depth
+    val enter = if (targetState is Overlay.Session) {
+        fadeIn(
+            tween(260, delayMillis = 40, easing = IsleMotion.emphasizedDecelerate)
+        ) + scaleIn(
+            initialScale = 0.98f,
+            animationSpec = tween(260, delayMillis = 40, easing = IsleMotion.emphasizedDecelerate)
+        )
+    } else {
+        fadeIn(
+            tween(200, delayMillis = 80, easing = IsleMotion.emphasizedDecelerate)
+        ) + slideInHorizontally(IsleMotion.spatialDefault()) {
+            if (forward) it / 8 else -it / 8
+        }
+    }
+    val exit = if (initialState is Overlay.Session) {
+        fadeOut(tween(120, easing = IsleMotion.emphasizedAccelerate))
+    } else {
+        fadeOut(tween(90, easing = IsleMotion.emphasizedAccelerate)) +
+            slideOutHorizontally(IsleMotion.spatialDefault()) {
+                if (forward) -it / 12 else it / 12
+            }
+    }
+    return enter togetherWith exit
+}
+
 @Composable
 fun MainApp(
     viewModel: AppViewModel,
@@ -127,6 +196,8 @@ fun MainApp(
     var overlay by rememberSaveable(stateSaver = OverlaySaver) {
         mutableStateOf<Overlay?>(null)
     }
+    var insightsAnimated by rememberSaveable { mutableStateOf(false) }
+    val reduceMotion = LocalReduceMotion.current
 
     fun closeCurrentOverlay() {
         overlay = when (val current = overlay) {
@@ -142,7 +213,13 @@ fun MainApp(
 
     BackHandler(enabled = overlay != null) { closeCurrentOverlay() }
 
-    when (val current = overlay) {
+    AnimatedContent(
+        targetState = overlay,
+        transitionSpec = { overlayTransform(reduceMotion) },
+        contentKey = { it.routeKey() },
+        label = "overlay"
+    ) { current ->
+        when (current) {
         null -> {
             Scaffold(
                 containerColor = Color.Transparent,
@@ -189,7 +266,31 @@ fun MainApp(
                 }
             ) { padding ->
                 Box(modifier = Modifier.padding(padding)) {
-                    when (tab) {
+                    AnimatedContent(
+                        targetState = tab,
+                        modifier = Modifier.fillMaxSize(),
+                        transitionSpec = {
+                            if (reduceMotion) {
+                                EnterTransition.None togetherWith ExitTransition.None
+                            } else {
+                                val forward = targetState > initialState
+                                (fadeIn(
+                                    tween(200, delayMillis = 80, easing = IsleMotion.emphasizedDecelerate)
+                                ) + slideInHorizontally(IsleMotion.spatialDefault()) {
+                                    if (forward) it / 10 else -it / 10
+                                })
+                                    .togetherWith(
+                                        fadeOut(tween(80, easing = IsleMotion.emphasizedAccelerate)) +
+                                            slideOutHorizontally(IsleMotion.spatialDefault()) {
+                                                if (forward) -it / 14 else it / 14
+                                            }
+                                    )
+                            }
+                        },
+                        contentKey = { it },
+                        label = "tab"
+                    ) { currentTab ->
+                        when (currentTab) {
                         0 -> HomeScreen(
                             data = data,
                             settings = settings,
@@ -220,12 +321,17 @@ fun MainApp(
                             onAdd = { overlay = Overlay.JournalEdit(null) },
                             onOpen = { overlay = Overlay.JournalEdit(it) }
                         )
-                        3 -> InsightsScreen(data = data)
+                        3 -> InsightsScreen(
+                            data = data,
+                            animateBars = !insightsAnimated,
+                            onBarsAnimationPlayed = { insightsAnimated = true }
+                        )
                         else -> KnowledgeScreen(
                             onOpenArticle = { overlay = Overlay.Article(it) },
                             onOpenGuide = { overlay = Overlay.Guide(null) },
                             readGuideCount = settings.guideReadIds.size
                         )
+                        }
                     }
                 }
             }
@@ -338,6 +444,7 @@ fun MainApp(
                 },
                 onBack = { overlay = Overlay.Guide(null) }
             )
+        }
         }
     }
 }

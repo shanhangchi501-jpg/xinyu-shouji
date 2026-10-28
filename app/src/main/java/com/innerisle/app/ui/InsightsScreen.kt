@@ -18,6 +18,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,6 +31,11 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,13 +48,27 @@ import com.innerisle.app.data.Achievement
 import com.innerisle.app.data.AppData
 import com.innerisle.app.data.SessionType
 import com.innerisle.app.data.computeAchievements
+import com.innerisle.app.ui.theme.IsleMotion
+import com.innerisle.app.ui.theme.LocalReduceMotion
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.max
 
 @Composable
-fun InsightsScreen(data: AppData) {
+fun InsightsScreen(
+    data: AppData,
+    animateBars: Boolean = true,
+    onBarsAnimationPlayed: () -> Unit = {}
+) {
+    val reduceMotion = LocalReduceMotion.current
+    var barsVisible by remember { mutableStateOf(!animateBars) }
+    LaunchedEffect(Unit) {
+        if (animateBars) {
+            barsVisible = true
+            onBarsAnimationPlayed()
+        }
+    }
     val last7 = (0..6).map { offset ->
         LocalDate.now().minusDays((6 - offset).toLong())
     }
@@ -134,7 +156,20 @@ fun InsightsScreen(data: AppData) {
                     last7.forEachIndexed { index, date ->
                         val minutes = values[index]
                         val ratio = minutes.toFloat() / maxValue.toFloat()
-                        val barHeight = max(3f, 86f * ratio)
+                        val animatedRatio by animateFloatAsState(
+                            targetValue = if (barsVisible) ratio else 0f,
+                            animationSpec = if (reduceMotion) {
+                                snap()
+                            } else {
+                                tween(
+                                    durationMillis = 520,
+                                    delayMillis = index * 35,
+                                    easing = IsleMotion.emphasizedDecelerate
+                                )
+                            },
+                            label = "weekBar"
+                        )
+                        val barHeight = max(3f, 86f * animatedRatio)
                         Column(
                             modifier = Modifier.weight(1f),
                             horizontalAlignment = Alignment.CenterHorizontally

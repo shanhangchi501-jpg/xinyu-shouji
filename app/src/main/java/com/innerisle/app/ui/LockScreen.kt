@@ -3,8 +3,15 @@ package com.innerisle.app.ui
 import com.innerisle.app.data.tr
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.snap
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +20,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -24,13 +32,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.innerisle.app.ui.theme.IsleMotion
+import com.innerisle.app.ui.theme.LocalReduceMotion
+import com.innerisle.app.ui.theme.pressScale
+import kotlin.math.roundToInt
 
 @Composable
 fun LockScreen(
@@ -39,6 +57,8 @@ fun LockScreen(
 ) {
     var pin by rememberSaveable { mutableStateOf("") }
     var error by rememberSaveable { mutableStateOf(false) }
+    val reduceMotion = LocalReduceMotion.current
+    val shake = remember { Animatable(0f) }
 
     BackHandler { onQuickExit() }
 
@@ -49,6 +69,27 @@ fun LockScreen(
                 error = true
                 pin = ""
             }
+        }
+    }
+
+    LaunchedEffect(error) {
+        if (error && !reduceMotion) {
+            shake.snapTo(0f)
+            shake.animateTo(
+                targetValue = 0f,
+                animationSpec = keyframes {
+                    durationMillis = 300
+                    0f at 0
+                    -10f at 50
+                    10f at 110
+                    -6f at 170
+                    6f at 230
+                    0f at 300
+                }
+            )
+        } else {
+            // Typing while the shake is running cancels the effect; reset the offset.
+            shake.snapTo(0f)
         }
     }
 
@@ -70,19 +111,35 @@ fun LockScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(Modifier.height(22.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+        Row(
+            modifier = Modifier.offset { IntOffset(shake.value.roundToInt(), 0) },
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
             repeat(4) { index ->
+                val filled = index < pin.length
+                val dotScale by animateFloatAsState(
+                    targetValue = if (filled) 1.25f else 1f,
+                    animationSpec = if (reduceMotion) snap() else IsleMotion.spatialFast(),
+                    label = "pinDotScale"
+                )
+                val dotColor by animateColorAsState(
+                    targetValue = if (filled) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    },
+                    animationSpec = if (reduceMotion) snap() else IsleMotion.effectsFast(),
+                    label = "pinDotColor"
+                )
                 Box(
                     modifier = Modifier
                         .size(14.dp)
+                        .graphicsLayer {
+                            scaleX = dotScale
+                            scaleY = dotScale
+                        }
                         .clip(CircleShape)
-                        .background(
-                            if (index < pin.length) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.surfaceVariant
-                            }
-                        )
+                        .background(dotColor)
                 )
             }
         }
@@ -140,39 +197,63 @@ private fun NumberPad(
             ) {
                 row.forEach { key ->
                     val isAction = key == tr("清空") || key == "⌫"
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(58.dp)
-                            .clip(CircleShape)
-                            .background(
-                                if (isAction) {
-                                    androidx.compose.ui.graphics.Color.Transparent
-                                } else {
-                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
-                                }
-                            )
-                            .clickable {
-                                when (key) {
-                                    tr("清空") -> onClear()
-                                    "⌫" -> onDelete()
-                                    else -> onDigit(key)
-                                }
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = key,
-                            style = MaterialTheme.typography.titleLarge,
-                            color = if (isAction) {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            } else {
-                                MaterialTheme.colorScheme.onSurface
+                    KeypadKey(
+                        label = key,
+                        isAction = isAction,
+                        onClick = {
+                            when (key) {
+                                tr("清空") -> onClear()
+                                "⌫" -> onDelete()
+                                else -> onDigit(key)
                             }
-                        )
-                    }
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun KeypadKey(
+    label: String,
+    isAction: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val haptic = LocalHapticFeedback.current
+    Box(
+        modifier = modifier
+            // Scale the whole key, including its background, on press.
+            .pressScale(interactionSource)
+            .height(58.dp)
+            .clip(CircleShape)
+            .background(
+                if (isAction) {
+                    Color.Transparent
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
+                }
+            )
+            .clickable(
+                interactionSource = interactionSource,
+                indication = LocalIndication.current
+            ) {
+                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                onClick()
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.titleLarge,
+            color = if (isAction) {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            }
+        )
     }
 }

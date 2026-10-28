@@ -4,10 +4,21 @@ import com.innerisle.app.data.L
 
 import com.innerisle.app.data.tr
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +48,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,6 +59,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innerisle.app.data.AppData
 import com.innerisle.app.data.SessionType
+import com.innerisle.app.ui.theme.IsleMotion
+import com.innerisle.app.ui.theme.LocalReduceMotion
+import com.innerisle.app.ui.theme.pressScale
 
 @Composable
 fun CompanionScreen(
@@ -296,27 +311,67 @@ private fun TechniqueCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val reduceMotion = LocalReduceMotion.current
+    val interactionSource = remember { MutableInteractionSource() }
     val shape = MaterialTheme.shapes.large
+    val background by animateColorAsState(
+        targetValue = if (selected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surface
+        },
+        animationSpec = if (reduceMotion) snap() else IsleMotion.effectsDefault(),
+        label = "techniqueBackground"
+    )
+    val borderColor by animateColorAsState(
+        targetValue = if (selected) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.outline.copy(alpha = 0.16f)
+        },
+        animationSpec = if (reduceMotion) snap() else IsleMotion.effectsDefault(),
+        label = "techniqueBorder"
+    )
+    val borderWidth by animateDpAsState(
+        targetValue = if (selected) 1.5.dp else 1.dp,
+        animationSpec = if (reduceMotion) snap() else IsleMotion.spatialFast(),
+        label = "techniqueBorderWidth"
+    )
+    val titleColor by animateColorAsState(
+        targetValue = if (selected) {
+            MaterialTheme.colorScheme.onPrimaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        },
+        animationSpec = if (reduceMotion) snap() else IsleMotion.effectsDefault(),
+        label = "techniqueTitle"
+    )
+    val subtitleColor by animateColorAsState(
+        targetValue = if (selected) {
+            MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.72f)
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        },
+        animationSpec = if (reduceMotion) snap() else IsleMotion.effectsDefault(),
+        label = "techniqueSubtitle"
+    )
     Column(
         modifier = modifier
+            // Keep the scale layer outside the background/border so the whole card
+            // shrinks on press, not just its text.
+            .pressScale(interactionSource)
             .clip(shape)
-            .background(
-                if (selected) {
-                    MaterialTheme.colorScheme.primaryContainer
-                } else {
-                    MaterialTheme.colorScheme.surface
-                }
-            )
+            .background(background)
             .border(
-                width = if (selected) 1.5.dp else 1.dp,
-                color = if (selected) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.outline.copy(alpha = 0.16f)
-                },
+                width = borderWidth,
+                color = borderColor,
                 shape = shape
             )
-            .clickable(onClick = onClick)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = LocalIndication.current,
+                onClick = onClick
+            )
             .padding(15.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -327,7 +382,17 @@ private fun TechniqueCard(
                 modifier = Modifier.size(22.dp)
             )
             Spacer(Modifier.weight(1f))
-            if (selected) {
+            AnimatedVisibility(
+                visible = selected,
+                enter = fadeIn(tween(150)) + scaleIn(
+                    initialScale = 0.8f,
+                    animationSpec = tween(180)
+                ),
+                exit = fadeOut(tween(120)) + scaleOut(
+                    targetScale = 0.8f,
+                    animationSpec = tween(150)
+                )
+            ) {
                 Icon(
                     Icons.Outlined.CheckCircle,
                     contentDescription = null,
@@ -341,21 +406,13 @@ private fun TechniqueCard(
             text = type.label,
             style = MaterialTheme.typography.titleMedium,
             fontSize = 15.sp,
-            color = if (selected) {
-                MaterialTheme.colorScheme.onPrimaryContainer
-            } else {
-                MaterialTheme.colorScheme.onSurface
-            }
+            color = titleColor
         )
         Spacer(Modifier.height(2.dp))
         Text(
             text = type.subtitle,
             style = MaterialTheme.typography.bodyMedium,
-            color = if (selected) {
-                MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.72f)
-            } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            },
+            color = subtitleColor,
             minLines = 2,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis

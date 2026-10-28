@@ -4,8 +4,16 @@ import com.innerisle.app.data.L
 
 import com.innerisle.app.data.tr
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -48,6 +56,8 @@ import com.innerisle.app.data.Articles
 import com.innerisle.app.data.Concept
 import com.innerisle.app.data.GuideChapters
 import com.innerisle.app.data.KnowledgeCategories
+import com.innerisle.app.ui.theme.IsleMotion
+import com.innerisle.app.ui.theme.LocalReduceMotion
 
 @Composable
 fun KnowledgeScreen(
@@ -55,6 +65,7 @@ fun KnowledgeScreen(
     onOpenGuide: () -> Unit,
     readGuideCount: Int
 ) {
+    val reduceMotion = LocalReduceMotion.current
     var query by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf(tr("全部")) }
     var expandedConcept by rememberSaveable { mutableStateOf<String?>(null) }
@@ -212,10 +223,12 @@ fun KnowledgeScreen(
                 )
             }
             items(articles, key = { it.id }) { article ->
-                ArticleCard(
-                    article = article,
-                    onClick = { onOpenArticle(article.id) }
-                )
+                Box(if (reduceMotion) Modifier else Modifier.animateItem()) {
+                    ArticleCard(
+                        article = article,
+                        onClick = { onOpenArticle(article.id) }
+                    )
+                }
             }
         }
 
@@ -227,17 +240,19 @@ fun KnowledgeScreen(
                 )
             }
             items(concepts, key = { it.term }) { concept ->
-                ConceptCard(
-                    concept = concept,
-                    expanded = expandedConcept == concept.term,
-                    onClick = {
-                        expandedConcept = if (expandedConcept == concept.term) {
-                            null
-                        } else {
-                            concept.term
+                Box(if (reduceMotion) Modifier else Modifier.animateItem()) {
+                    ConceptCard(
+                        concept = concept,
+                        expanded = expandedConcept == concept.term,
+                        onClick = {
+                            expandedConcept = if (expandedConcept == concept.term) {
+                                null
+                            } else {
+                                concept.term
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
 
@@ -324,6 +339,7 @@ private fun ConceptCard(
     expanded: Boolean,
     onClick: () -> Unit
 ) {
+    val reduceMotion = LocalReduceMotion.current
     SoftCard(onClick = onClick) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -345,17 +361,33 @@ private fun ConceptCard(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        if (expanded) {
-            Spacer(Modifier.height(12.dp))
-            HorizontalDivider(
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(
+                animationSpec = if (reduceMotion) snap() else IsleMotion.spatialDefault(),
+                expandFrom = Alignment.Top
+            ) + fadeIn(
+                animationSpec = if (reduceMotion) snap() else tween(180)
+            ),
+            exit = shrinkVertically(
+                animationSpec = if (reduceMotion) snap() else IsleMotion.spatialDefault(),
+                shrinkTowards = Alignment.Top
+            ) + fadeOut(
+                animationSpec = if (reduceMotion) snap() else tween(140)
             )
-            Spacer(Modifier.height(12.dp))
-            Text(
-                text = concept.detail,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+        ) {
+            Column {
+                Spacer(Modifier.height(12.dp))
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
+                )
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = concept.detail,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }

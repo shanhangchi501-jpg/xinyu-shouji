@@ -35,7 +35,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +51,8 @@ import com.innerisle.app.data.DailyPrompts
 import com.innerisle.app.data.GuideChapters
 import com.innerisle.app.data.JournalEntry
 import com.innerisle.app.data.SessionType
+import com.innerisle.app.ui.theme.IsleMotion
+import com.innerisle.app.ui.theme.LocalReduceMotion
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -338,7 +343,13 @@ private fun HeroCard(
     daysTogether: Int,
     onStart: () -> Unit
 ) {
+    val reduceMotion = LocalReduceMotion.current
     val progress = (todayMinutes / 20f).coerceIn(0f, 1f)
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress,
+        animationSpec = if (reduceMotion) snap() else IsleMotion.spatialSlow(),
+        label = "todayProgress"
+    )
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -391,7 +402,7 @@ private fun HeroCard(
             }
             Box(contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(
-                    progress = { progress },
+                    progress = { animatedProgress },
                     modifier = Modifier.size(74.dp),
                     strokeWidth = 7.dp,
                     color = MaterialTheme.colorScheme.primary,
@@ -425,7 +436,7 @@ private fun QuickActionCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    SoftCard(modifier = modifier, onClick = onClick) {
+    SoftCard(modifier = modifier, onClick = onClick, pressScale = true) {
         Icon(
             icon,
             contentDescription = null,

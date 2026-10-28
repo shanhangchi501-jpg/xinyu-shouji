@@ -4,6 +4,7 @@ import com.innerisle.app.data.tr
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -46,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import com.innerisle.app.data.AppData
 import com.innerisle.app.data.DailyPrompts
 import com.innerisle.app.data.JournalEntry
+import com.innerisle.app.ui.theme.LocalReduceMotion
 import java.util.UUID
 
 @Composable
@@ -54,6 +57,7 @@ fun JournalScreen(
     onAdd: () -> Unit,
     onOpen: (String) -> Unit
 ) {
+    val reduceMotion = LocalReduceMotion.current
     var selectedAuthor by rememberSaveable { mutableStateOf("__all__") }
     val entries = data.journalsFor(
         if (selectedAuthor == "__all__") null else selectedAuthor
@@ -113,8 +117,8 @@ fun JournalScreen(
                 )
             }
         } else {
-            entries.forEach { entry ->
-                item {
+            items(entries, key = { it.id }) { entry ->
+                Box(if (reduceMotion) Modifier else Modifier.animateItem()) {
                     JournalCard(
                         entry = entry,
                         author = data.memberById(entry.authorId),

@@ -5,12 +5,21 @@ import com.innerisle.app.data.L
 import com.innerisle.app.data.tr
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -45,7 +54,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +65,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -67,6 +79,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import com.innerisle.app.data.AppData
 import com.innerisle.app.data.SessionType
+import com.innerisle.app.ui.theme.IsleMotion
+import com.innerisle.app.ui.theme.LocalReduceMotion
 import com.innerisle.app.work.ReminderScheduler
 import kotlinx.coroutines.delay
 import java.util.Locale
@@ -86,6 +100,7 @@ fun SessionScreen(
     val context = LocalContext.current
     val view = LocalView.current
     val darkTheme = isSystemInDarkTheme()
+    val reduceMotion = LocalReduceMotion.current
     val safeMinutes = plannedMinutes.coerceAtLeast(1)
     val totalSeconds = safeMinutes * 60
 
@@ -144,39 +159,15 @@ fun SessionScreen(
         }
     }
 
-    if (finished) {
-        RecordContent(
-            tulpaName = tulpa?.name ?: "TA",
-            tulpaEmoji = tulpa?.emoji ?: "🌙",
-            type = type,
-            actualMinutes = max(
-                1,
-                ceil((totalSeconds - remaining.coerceAtLeast(0)) / 60.0).toInt()
-            ),
-            mood = mood,
-            onMoodChange = { mood = it },
-            note = note,
-            onNoteChange = { note = it },
-            onSave = {
-                ReminderScheduler.cancelSessionEnd(context)
-                onSave(
-                    startedAt,
-                    max(
-                        1,
-                        ceil((totalSeconds - remaining.coerceAtLeast(0)) / 60.0).toInt()
-                    ),
-                    mood,
-                    note
-                )
-            },
-            onDiscard = {
-                ReminderScheduler.cancelSessionEnd(context)
-                onBack()
+    Box(modifier = Modifier.fillMaxSize()) {
+        AnimatedVisibility(
+            visible = !finished,
+            exit = if (reduceMotion) {
+                ExitTransition.None
+            } else {
+                fadeOut(tween(180, easing = IsleMotion.emphasizedAccelerate))
             }
-        )
-        return
-    }
-
+        ) {
     ImmersiveBackground {
         Column(
             modifier = Modifier
@@ -252,13 +243,28 @@ fun SessionScreen(
                     )
                     .padding(18.dp)
             ) {
-                Text(
-                    text = type.guidance[guidanceIndex],
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White.copy(alpha = 0.82f),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                AnimatedContent(
+                    targetState = guidanceIndex,
+                    transitionSpec = {
+                        if (reduceMotion) {
+                            EnterTransition.None togetherWith ExitTransition.None
+                        } else {
+                            fadeIn(tween(400, easing = IsleMotion.emphasizedDecelerate))
+                                .togetherWith(
+                                    fadeOut(tween(200, easing = IsleMotion.emphasizedAccelerate))
+                                )
+                        }
+                    },
+                    label = "guidance"
+                ) { index ->
+                    Text(
+                        text = type.guidance[index],
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White.copy(alpha = 0.82f),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
 
             Spacer(Modifier.height(20.dp))
@@ -308,6 +314,49 @@ fun SessionScreen(
                 }
             }
             Spacer(Modifier.height(12.dp))
+        }
+    }
+        }
+        AnimatedVisibility(
+            visible = finished,
+            enter = if (reduceMotion) {
+                EnterTransition.None
+            } else {
+                fadeIn(tween(280, easing = IsleMotion.emphasizedDecelerate)) +
+                    slideInVertically(
+                        animationSpec = tween(280, easing = IsleMotion.emphasizedDecelerate)
+                    ) { it / 14 }
+            }
+        ) {
+            RecordContent(
+                tulpaName = tulpa?.name ?: "TA",
+                tulpaEmoji = tulpa?.emoji ?: "🌙",
+                type = type,
+                actualMinutes = max(
+                    1,
+                    ceil((totalSeconds - remaining.coerceAtLeast(0)) / 60.0).toInt()
+                ),
+                mood = mood,
+                onMoodChange = { mood = it },
+                note = note,
+                onNoteChange = { note = it },
+                onSave = {
+                    ReminderScheduler.cancelSessionEnd(context)
+                    onSave(
+                        startedAt,
+                        max(
+                            1,
+                            ceil((totalSeconds - remaining.coerceAtLeast(0)) / 60.0).toInt()
+                        ),
+                        mood,
+                        note
+                    )
+                },
+                onDiscard = {
+                    ReminderScheduler.cancelSessionEnd(context)
+                    onBack()
+                }
+            )
         }
     }
 
@@ -385,34 +434,48 @@ private fun ImmersiveBackground(content: @Composable () -> Unit) {
 
 @Composable
 private fun BreathingCircle() {
-    val transition = rememberInfiniteTransition(label = "breath")
-    val scale by transition.animateFloat(
-        initialValue = 0.86f,
-        targetValue = 1.08f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(4200, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "scale"
-    )
-    val alpha by transition.animateFloat(
-        initialValue = 0.12f,
-        targetValue = 0.26f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(4200, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "alpha"
-    )
+    val reduceMotion = LocalReduceMotion.current
+    val scale: State<Float>
+    val alpha: State<Float>
+    if (reduceMotion) {
+        scale = remember { mutableStateOf(1f) }
+        alpha = remember { mutableStateOf(0.18f) }
+    } else {
+        val transition = rememberInfiniteTransition(label = "breath")
+        scale = transition.animateFloat(
+            initialValue = 0.86f,
+            targetValue = 1.08f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(4200, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "scale"
+        )
+        alpha = transition.animateFloat(
+            initialValue = 0.12f,
+            targetValue = 0.26f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(4200, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "alpha"
+        )
+    }
     Box(
         modifier = Modifier
             .size(250.dp)
             .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
+                scaleX = scale.value
+                scaleY = scale.value
             }
             .clip(CircleShape)
-            .background(Color(0xFFB8C6E6).copy(alpha = alpha)),
+            .drawBehind {
+                drawCircle(
+                    color = Color(0xFFB8C6E6),
+                    alpha = alpha.value,
+                    radius = size.minDimension / 2f
+                )
+            },
         contentAlignment = Alignment.Center
     ) {
         Box(

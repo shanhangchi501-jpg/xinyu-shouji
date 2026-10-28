@@ -7,9 +7,11 @@ import com.innerisle.app.data.tr
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,6 +51,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.innerisle.app.data.MoodOptions
 import com.innerisle.app.data.SessionType
+import com.innerisle.app.ui.theme.pressScale
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -200,6 +204,7 @@ fun SoftCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     containerColor: Color = MaterialTheme.colorScheme.surface,
+    pressScale: Boolean = false,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = MaterialTheme.shapes.large
@@ -211,12 +216,25 @@ fun SoftCard(
     } else {
         containerColor
     }
+    val interactionSource = remember { MutableInteractionSource() }
     Card(
         modifier = modifier
             .clip(shape)
             .then(
                 if (onClick != null) {
-                    Modifier.clickable { onClick() }
+                    Modifier
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = LocalIndication.current,
+                            onClick = onClick
+                        )
+                        .then(
+                            if (pressScale) {
+                                Modifier.pressScale(interactionSource)
+                            } else {
+                                Modifier
+                            }
+                        )
                 } else {
                     Modifier
                 }
