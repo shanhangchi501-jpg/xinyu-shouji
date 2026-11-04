@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -128,6 +129,8 @@ fun MainApp(
     var overlay by rememberSaveable(stateSaver = OverlaySaver) {
         mutableStateOf<Overlay?>(null)
     }
+    // Keep each tab's scroll position and filters when an overlay is opened.
+    val tabStateHolder = rememberSaveableStateHolder()
 
     // If the process was killed mid-session, reopen it so the timer can continue.
     LaunchedEffect(data.activeSession?.updatedAt) {
@@ -203,44 +206,54 @@ fun MainApp(
             ) { padding ->
                 Box(modifier = Modifier.padding(padding)) {
                     when (tab) {
-                        0 -> HomeScreen(
-                            data = data,
-                            settings = settings,
-                            onOpenSettings = { overlay = Overlay.Settings },
-                            onOpenCompanion = { tab = 1 },
-                            onQuickSession = { type, minutes ->
-                                val tulpa = data.tulpas.firstOrNull()
-                                if (tulpa != null) {
-                                    viewModel.startSession(tulpa.id, type, minutes)
-                                    overlay = Overlay.Session(type, tulpa.id, minutes)
-                                }
-                            },
-                            onWriteJournal = { overlay = Overlay.JournalEdit(null) },
-                            onOpenJournal = { overlay = Overlay.JournalEdit(it) },
-                            onAddMember = { overlay = Overlay.MemberEdit(null) },
-                            onLock = { viewModel.lock() },
-                            onOpenGuide = { overlay = Overlay.Guide(null) },
-                            guideReadCount = settings.guideReadIds.size
-                        )
-                        1 -> CompanionScreen(
-                            data = data,
-                            onStart = { type, tulpaId, minutes ->
-                                viewModel.startSession(tulpaId, type, minutes)
-                                overlay = Overlay.Session(type, tulpaId, minutes)
-                            },
-                            onAddMember = { overlay = Overlay.MemberEdit(null) }
-                        )
-                        2 -> JournalScreen(
-                            data = data,
-                            onAdd = { overlay = Overlay.JournalEdit(null) },
-                            onOpen = { overlay = Overlay.JournalEdit(it) }
-                        )
-                        3 -> InsightsScreen(data = data)
-                        else -> KnowledgeScreen(
-                            onOpenArticle = { overlay = Overlay.Article(it) },
-                            onOpenGuide = { overlay = Overlay.Guide(null) },
-                            readGuideCount = settings.guideReadIds.size
-                        )
+                        0 -> tabStateHolder.SaveableStateProvider("tab_home") {
+                            HomeScreen(
+                                data = data,
+                                settings = settings,
+                                onOpenSettings = { overlay = Overlay.Settings },
+                                onOpenCompanion = { tab = 1 },
+                                onQuickSession = { type, minutes ->
+                                    val tulpa = data.tulpas.firstOrNull()
+                                    if (tulpa != null) {
+                                        viewModel.startSession(tulpa.id, type, minutes)
+                                        overlay = Overlay.Session(type, tulpa.id, minutes)
+                                    }
+                                },
+                                onWriteJournal = { overlay = Overlay.JournalEdit(null) },
+                                onOpenJournal = { overlay = Overlay.JournalEdit(it) },
+                                onAddMember = { overlay = Overlay.MemberEdit(null) },
+                                onLock = { viewModel.lock() },
+                                onOpenGuide = { overlay = Overlay.Guide(null) },
+                                guideReadCount = settings.guideReadIds.size
+                            )
+                        }
+                        1 -> tabStateHolder.SaveableStateProvider("tab_together") {
+                            CompanionScreen(
+                                data = data,
+                                onStart = { type, tulpaId, minutes ->
+                                    viewModel.startSession(tulpaId, type, minutes)
+                                    overlay = Overlay.Session(type, tulpaId, minutes)
+                                },
+                                onAddMember = { overlay = Overlay.MemberEdit(null) }
+                            )
+                        }
+                        2 -> tabStateHolder.SaveableStateProvider("tab_journal") {
+                            JournalScreen(
+                                data = data,
+                                onAdd = { overlay = Overlay.JournalEdit(null) },
+                                onOpen = { overlay = Overlay.JournalEdit(it) }
+                            )
+                        }
+                        3 -> tabStateHolder.SaveableStateProvider("tab_insights") {
+                            InsightsScreen(data = data)
+                        }
+                        else -> tabStateHolder.SaveableStateProvider("tab_learn") {
+                            KnowledgeScreen(
+                                onOpenArticle = { overlay = Overlay.Article(it) },
+                                onOpenGuide = { overlay = Overlay.Guide(null) },
+                                readGuideCount = settings.guideReadIds.size
+                            )
+                        }
                     }
                 }
             }
