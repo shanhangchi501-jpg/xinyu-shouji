@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -86,6 +87,7 @@ private fun InnerIsleRoot(viewModel: AppViewModel) {
     val locked by viewModel.locked.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val activity = context.findActivity()
+    val mainStateHolder = rememberSaveableStateHolder()
 
     LaunchedEffect(settings.preventScreenshots) {
         if (settings.preventScreenshots) {
@@ -107,12 +109,14 @@ private fun InnerIsleRoot(viewModel: AppViewModel) {
                 onUnlock = { pin -> viewModel.unlock(pin) },
                 onQuickExit = { quickExit(context) }
             )
-            else -> MainApp(
-                viewModel = viewModel,
-                data = data,
-                settings = settings,
-                onQuickExit = { quickExit(context) }
-            )
+            else -> mainStateHolder.SaveableStateProvider("main") {
+                MainApp(
+                    viewModel = viewModel,
+                    data = data,
+                    settings = settings,
+                    onQuickExit = { quickExit(context) }
+                )
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.innerisle.app.data.ActiveSession
 import com.innerisle.app.data.AppData
 import com.innerisle.app.data.JournalEntry
 import com.innerisle.app.data.L
@@ -192,7 +193,46 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun deleteMember(memberId: String) {
         update { current ->
-            current.copy(members = current.members.filterNot { it.id == memberId })
+            current.copy(
+                members = current.members.filterNot { it.id == memberId },
+                activeSession = current.activeSession?.takeIf { it.tulpaId != memberId }
+            )
+        }
+    }
+
+    fun startSession(
+        tulpaId: String,
+        type: SessionType,
+        plannedMinutes: Int
+    ): ActiveSession {
+        val safeMinutes = plannedMinutes.coerceAtLeast(1)
+        val now = System.currentTimeMillis()
+        val active = ActiveSession(
+            tulpaId = tulpaId,
+            type = type,
+            plannedMinutes = safeMinutes,
+            startedAt = now,
+            endAt = now + safeMinutes * 60_000L,
+            remainingSeconds = safeMinutes * 60,
+            running = true,
+            finished = false,
+            updatedAt = now
+        )
+        update { current -> current.copy(activeSession = active) }
+        return active
+    }
+
+    fun setActiveSession(active: ActiveSession?) {
+        update { current ->
+            if (current.activeSession == active) current
+            else current.copy(activeSession = active)
+        }
+    }
+
+    fun clearActiveSession() {
+        update { current ->
+            if (current.activeSession == null) current
+            else current.copy(activeSession = null)
         }
     }
 

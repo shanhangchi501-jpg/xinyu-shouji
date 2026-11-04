@@ -49,6 +49,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,6 +66,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+import com.innerisle.app.data.ActiveSession
 import com.innerisle.app.data.AppData
 import com.innerisle.app.data.SessionType
 import com.innerisle.app.work.ReminderScheduler
@@ -79,6 +81,8 @@ fun SessionScreen(
     tulpaId: String,
     type: SessionType,
     plannedMinutes: Int,
+    activeSession: ActiveSession?,
+    onSessionChange: (ActiveSession) -> Unit,
     onBack: () -> Unit,
     onSave: (startedAt: Long, minutes: Int, mood: String, note: String) -> Unit
 ) {
@@ -100,20 +104,59 @@ fun SessionScreen(
         }
     }
 
-    var startedAt by rememberSaveable { mutableLongStateOf(System.currentTimeMillis()) }
-    var remaining by rememberSaveable { mutableIntStateOf(totalSeconds) }
-    var running by rememberSaveable { mutableStateOf(true) }
-    var endAt by rememberSaveable {
-        mutableLongStateOf(System.currentTimeMillis() + totalSeconds * 1000L)
-    }
-    var finished by rememberSaveable { mutableStateOf(false) }
-    var showExitDialog by rememberSaveable { mutableStateOf(false) }
-    var mood by rememberSaveable { mutableStateOf("") }
-    var note by rememberSaveable { mutableStateOf("") }
+    val restored = activeSession
+    val initialNow = remember { System.currentTimeMillis() }
 
-    DisposableEffect(Unit) {
-        ReminderScheduler.scheduleSessionEnd(context, safeMinutes)
-        onDispose {
+    var startedAt by rememberSaveable {
+        mutableLongStateOf(restored?.startedAt ?: initialNow)
+    }
+    var remaining by rememberSaveable {
+        mutableIntStateOf(
+            restored?.remainingSeconds?.coerceIn(0, totalSeconds) ?: totalSeconds
+        )
+    }
+    var running by rememberSaveable { mutableStateOf(restored?.running ?: true) }
+    var endAt by rememberSaveable {
+        mutableLongStateOf(restored?.endAt ?: initialNow + totalSeconds * 1000L)
+    }
+    var finished by rememberSaveable { mutableStateOf(restored?.finished ?: false) }
+    var showExitDialog by rememberSaveable { mutableStateOf(false) }
+    var mood by rememberSaveable { mutableStateOf(restored?.mood.orEmpty()) }
+    var note by rememberSaveable { mutableStateOf(restored?.note.orEmpty()) }
+
+    fun snapshot(
+        remainingSeconds: Int = remaining,
+        runningNow: Boolean = running,
+        finishedNow: Boolean = finished,
+        moodNow: String = mood,
+        noteNow: String = note
+    ) = ActiveSession(
+        tulpaId = tulpaId,
+        type = type,
+        plannedMinutes = safeMinutes,
+        startedAt = startedAt,
+        endAt = endAt,
+        remainingSeconds = remainingSeconds,
+        running = runningNow,
+        finished = finishedNow,
+        mood = moodNow,
+        note = noteNow
+    )
+
+    LaunchedEffect(Unit) {
+        // Save the session immediately so a process kill cannot lose it.
+        onSessionChange(snapshot())
+    }
+
+    LaunchedEffect(running, finished, endAt) {
+        if (running && !finished) {
+            val left = ((endAt - System.currentTimeMillis() + 999L) / 1000L)
+                .coerceAtLeast(1L)
+            ReminderScheduler.scheduleSessionEnd(
+                context,
+                max(1, ceil(left / 60.0).toInt())
+            )
+        } else {
             ReminderScheduler.cancelSessionEnd(context)
         }
     }
@@ -128,11 +171,26 @@ fun SessionScreen(
                 if (left <= 0) {
                     running = false
                     finished = true
+                    onSessionChange(
+                        snapshot(
+                            remainingSeconds = 0,
+                            runningNow = false,
+                            finishedNow = true
+                        )
+                    )
                     ReminderScheduler.cancelSessionEnd(context)
                     break
                 }
                 delay(200)
             }
+        }
+    }
+
+    LaunchedEffect(finished, mood, note) {
+        if (finished) {
+            // Keep the unsaved note across a lock or process restart.
+            delay(500)
+            onSessionChange(snapshot(moodNow = mood, noteNow = note))
         }
     }
 
@@ -286,10 +344,14 @@ fun SessionScreen(
                                 .toInt()
                                 .coerceAtLeast(0)
                             running = false
+                            onSessionChange(
+                                snapshot(remainingSeconds = remaining, runningNow = false)
+                            )
                             ReminderScheduler.cancelSessionEnd(context)
                         } else {
                             endAt = System.currentTimeMillis() + remaining * 1000L
                             running = true
+                            onSessionChange(snapshot(runningNow = true))
                             ReminderScheduler.scheduleSessionEnd(
                                 context,
                                 max(1, ceil(remaining / 60.0).toInt())
@@ -325,6 +387,13 @@ fun SessionScreen(
                             .coerceIn(0, totalSeconds)
                         running = false
                         finished = true
+                        onSessionChange(
+                            snapshot(
+                                remainingSeconds = remaining,
+                                runningNow = false,
+                                finishedNow = true
+                            )
+                        )
                         ReminderScheduler.cancelSessionEnd(context)
                     }
                 ) {

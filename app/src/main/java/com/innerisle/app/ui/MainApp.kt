@@ -18,6 +18,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -128,6 +129,18 @@ fun MainApp(
         mutableStateOf<Overlay?>(null)
     }
 
+    // If the process was killed mid-session, reopen it so the timer can continue.
+    LaunchedEffect(data.activeSession?.updatedAt) {
+        val active = data.activeSession
+        if (overlay == null && active != null && data.memberById(active.tulpaId) != null) {
+            overlay = Overlay.Session(
+                type = active.type,
+                tulpaId = active.tulpaId,
+                minutes = active.plannedMinutes
+            )
+        }
+    }
+
     fun closeCurrentOverlay() {
         overlay = when (val current = overlay) {
             is Overlay.About ->
@@ -198,6 +211,7 @@ fun MainApp(
                             onQuickSession = { type, minutes ->
                                 val tulpa = data.tulpas.firstOrNull()
                                 if (tulpa != null) {
+                                    viewModel.startSession(tulpa.id, type, minutes)
                                     overlay = Overlay.Session(type, tulpa.id, minutes)
                                 }
                             },
@@ -211,6 +225,7 @@ fun MainApp(
                         1 -> CompanionScreen(
                             data = data,
                             onStart = { type, tulpaId, minutes ->
+                                viewModel.startSession(tulpaId, type, minutes)
                                 overlay = Overlay.Session(type, tulpaId, minutes)
                             },
                             onAddMember = { overlay = Overlay.MemberEdit(null) }
@@ -297,7 +312,16 @@ fun MainApp(
             tulpaId = current.tulpaId,
             type = current.type,
             plannedMinutes = current.minutes,
-            onBack = { overlay = null },
+            activeSession = data.activeSession?.takeIf {
+                it.tulpaId == current.tulpaId &&
+                    it.type == current.type &&
+                    it.plannedMinutes == current.minutes
+            },
+            onSessionChange = viewModel::setActiveSession,
+            onBack = {
+                viewModel.clearActiveSession()
+                overlay = null
+            },
             onSave = { startedAt, minutes, mood, note ->
                 viewModel.addSession(
                     tulpaId = current.tulpaId,
@@ -307,6 +331,7 @@ fun MainApp(
                     mood = mood,
                     note = note
                 )
+                viewModel.clearActiveSession()
                 overlay = null
             }
         )

@@ -189,6 +189,25 @@ data class Session(
     val note: String = ""
 )
 
+/**
+ * A practice session that is currently in progress.
+ * Saved with the diary data so locking the app or restarting it does not lose the timer.
+ */
+@Serializable
+data class ActiveSession(
+    val tulpaId: String,
+    val type: SessionType,
+    val plannedMinutes: Int,
+    val startedAt: Long,
+    val endAt: Long,
+    val remainingSeconds: Int,
+    val running: Boolean = true,
+    val finished: Boolean = false,
+    val mood: String = "",
+    val note: String = "",
+    val updatedAt: Long = System.currentTimeMillis()
+)
+
 @Serializable
 data class JournalEntry(
     val id: String = UUID.randomUUID().toString(),
@@ -206,7 +225,8 @@ data class AppData(
     val version: Int = 1,
     val members: List<Member> = emptyList(),
     val sessions: List<Session> = emptyList(),
-    val journals: List<JournalEntry> = emptyList()
+    val journals: List<JournalEntry> = emptyList(),
+    val activeSession: ActiveSession? = null
 ) {
     val host: Member?
         get() = members.firstOrNull { it.role == MemberRole.HOST }
